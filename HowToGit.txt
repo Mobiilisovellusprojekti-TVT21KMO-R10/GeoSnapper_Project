@@ -1,0 +1,31 @@
+HOW TO GIT
+
+WORKFLOW ARJELLE
+git pull origin master 
+git commit -m "worked on x"
+git push
+
+->
+
+JOS MEILLÄ ON VALMIS OMINAISUUS
+git checkout master
+git pull origin SalenBranch
+git status
+git push origin master
+
+uusi local+remote repo alkaa aina:
+git init
+git add *
+git status 
+git commit -m "initial commit, added readme"
+git log
+git remote add url 
+git push --set-upstream origin master
+git push
+
+git checkout -b SalenBranch
+git branch
+git push -u origin <branch>
+git push --set-upstream SalenBranch
+git push
+ 
