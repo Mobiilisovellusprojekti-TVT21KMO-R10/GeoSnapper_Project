@@ -1,3 +1,9 @@
 Pojat on muuten hyviä koodaa
 
-Jes söör.
+
+Sauli was here.
+
+Kolmas kerta toden sanoo.
+
+Höhöh
+
