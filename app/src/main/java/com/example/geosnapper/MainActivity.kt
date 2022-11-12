@@ -19,5 +19,16 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, MapActivity::class.java)
             startActivity(intent);
         }
+
+        // Testinapilla avataan profiilinäkymä
+        binding.buttonTest2.setOnClickListener {
+            val intent = Intent(this, ProfileActivity::class.java)
+            startActivity(intent);
+        }
+
+        binding.buttonTest3.setOnClickListener {
+            val intent = Intent(this, AboutActivity::class.java)
+            startActivity(intent);
+        }
     }
 }
