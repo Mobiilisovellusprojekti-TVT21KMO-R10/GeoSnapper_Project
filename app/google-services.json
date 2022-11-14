@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "869355285124",
+    "project_id": "geosnapper-8d6b3",
+    "storage_bucket": "geosnapper-8d6b3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:869355285124:android:c5539ce9376376361c30d1",
+        "android_client_info": {
+          "package_name": "com.example.geosnapper"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "869355285124-l15si13fi3ph7gl0npsq14pvpidj1rt2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB0JkOs8tzXqPHE4uURGnAIU6OTk_I5LZY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "869355285124-l15si13fi3ph7gl0npsq14pvpidj1rt2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
