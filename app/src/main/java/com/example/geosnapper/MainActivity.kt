@@ -36,6 +36,13 @@ class MainActivity : AppCompatActivity() {
 
         // Testinapilla avataan karttanäkymä
         binding.buttonTest1.setOnClickListener {
+        val passedValue=intent.getStringExtra("login")
+
+        if (passedValue == null) {
+            val intent = Intent(this, SignupActivity::class.java)
+            startActivity(intent);
+        }
+        else if (passedValue == "true"){
             val intent = Intent(this, MapActivity::class.java)
             startActivity(intent);
         }

@@ -1,35 +1,55 @@
 {
   "project_info": {
+<<<<<<< HEAD
+    "project_number": "988788262926",
+    "project_id": "geosnapper-72cff",
+    "storage_bucket": "geosnapper-72cff.appspot.com"
+=======
     "project_number": "869355285124",
     "project_id": "geosnapper-8d6b3",
     "storage_bucket": "geosnapper-8d6b3.appspot.com"
-
-    
+>>>>>>> 596f99a6ef186fd1000315ddad168907b939666d
   },
   "client": [
     {
       "client_info": {
+<<<<<<< HEAD
+        "mobilesdk_app_id": "1:988788262926:android:577e215a2856297d7fd45f",
+=======
         "mobilesdk_app_id": "1:869355285124:android:c5539ce9376376361c30d1",
+>>>>>>> 596f99a6ef186fd1000315ddad168907b939666d
         "android_client_info": {
           "package_name": "com.example.geosnapper"
         }
       },
       "oauth_client": [
         {
+<<<<<<< HEAD
+          "client_id": "988788262926-0i046m4rkentqtra0slod840qghjcd1v.apps.googleusercontent.com",
+=======
           "client_id": "869355285124-l15si13fi3ph7gl0npsq14pvpidj1rt2.apps.googleusercontent.com",
+>>>>>>> 596f99a6ef186fd1000315ddad168907b939666d
           "client_type": 3
         }
       ],
       "api_key": [
         {
+<<<<<<< HEAD
+          "current_key": "AIzaSyBy_7NpdyfvPEOO5zAmAeT5uS2wdjneVtg"
+=======
           "current_key": "AIzaSyB0JkOs8tzXqPHE4uURGnAIU6OTk_I5LZY"
+>>>>>>> 596f99a6ef186fd1000315ddad168907b939666d
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
+<<<<<<< HEAD
+              "client_id": "988788262926-0i046m4rkentqtra0slod840qghjcd1v.apps.googleusercontent.com",
+=======
               "client_id": "869355285124-l15si13fi3ph7gl0npsq14pvpidj1rt2.apps.googleusercontent.com",
+>>>>>>> 596f99a6ef186fd1000315ddad168907b939666d
               "client_type": 3
             }
           ]
