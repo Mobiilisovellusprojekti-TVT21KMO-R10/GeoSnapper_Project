@@ -21,6 +21,11 @@ class LoginActivity : AppCompatActivity() {
 
         firebaseAuth = FirebaseAuth.getInstance()
 
+        binding.btnReset.setOnClickListener{
+            binding.etEmail.setText("")
+            binding.etPassword.setText("")
+        }
+
         binding.textView.setOnClickListener{
             val intent = Intent(this, SignupActivity::class.java)
             startActivity(intent);
