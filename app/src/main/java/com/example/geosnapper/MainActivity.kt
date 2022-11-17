@@ -19,42 +19,16 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        //When initializing your activity, check to see if the user is currently signed in
-        /**
-         * public void onStart() {
-         *  super.onStart()
-         *  FirebaseUser currentUser = mAuth.getCurrentUser()
-         *  updateUI(currentUser)
-         *
-         *  //Access user information
-         *  FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser()
-         *  if(user != null) {
-         *      String name = user.getDisplayName()
-         *      String email = user.getEmail()
-         *      Uri
-         */
 
         // Testinapilla avataan karttanäkymä
-        binding.buttonTest1.setOnClickListener {
-        val passedValue=intent.getStringExtra("login")
+        val passedValue = intent.getStringExtra("login")
+        //val passedValue = "true"
 
         if (passedValue == null) {
             val intent = Intent(this, SignupActivity::class.java)
             startActivity(intent);
-        }
-        else if (passedValue == "true"){
-            val intent = Intent(this, MapActivity::class.java)
-            startActivity(intent);
-        }
-
-        // Testinapilla avataan profiilinäkymä
-        binding.buttonTest2.setOnClickListener {
+        } else if (passedValue == "true") {
             val intent = Intent(this, ProfileActivity::class.java)
-            startActivity(intent);
-        }
-
-        binding.buttonTest3.setOnClickListener {
-            val intent = Intent(this, AboutActivity::class.java)
             startActivity(intent);
         }
     }

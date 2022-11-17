@@ -4,9 +4,11 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Users/sopul/Documents/Koodit/Kotlin_projektit/geoSnapperApp/GeoSnapper_Project/app/src/main/res/drawable/fading_bg.xml" value="0.273" />
-        <entry key="..\:/Users/sopul/Documents/Koodit/Kotlin_projektit/geoSnapperApp/GeoSnapper_Project/app/src/main/res/layout/activity_about.xml" value="0.20380434782608695" />
+        <entry key="..\:/Users/sopul/Documents/Koodit/Kotlin_projektit/geoSnapperApp/GeoSnapper_Project/app/src/main/res/layout/activity_about.xml" value="0.1" />
+        <entry key="..\:/Users/sopul/Documents/Koodit/Kotlin_projektit/geoSnapperApp/GeoSnapper_Project/app/src/main/res/layout/activity_login.xml" value="0.23097826086956522" />
         <entry key="..\:/Users/sopul/Documents/Koodit/Kotlin_projektit/geoSnapperApp/GeoSnapper_Project/app/src/main/res/layout/activity_main.xml" value="0.20380434782608695" />
-        <entry key="..\:/Users/sopul/Documents/Koodit/Kotlin_projektit/geoSnapperApp/GeoSnapper_Project/app/src/main/res/layout/activity_profile.xml" value="0.22" />
+        <entry key="..\:/Users/sopul/Documents/Koodit/Kotlin_projektit/geoSnapperApp/GeoSnapper_Project/app/src/main/res/layout/activity_map.xml" value="0.23097826086956522" />
+        <entry key="..\:/Users/sopul/Documents/Koodit/Kotlin_projektit/geoSnapperApp/GeoSnapper_Project/app/src/main/res/layout/activity_profile.xml" value="0.1" />
         <entry key="..\:/Users/sopul/Documents/Koodit/Kotlin_projektit/geoSnapperApp/GeoSnapper_Project/app/src/main/res/layout/activity_settings.xml" value="0.25" />
       </map>
     </option>
