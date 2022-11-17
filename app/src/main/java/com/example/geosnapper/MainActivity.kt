@@ -15,12 +15,10 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
-        val mAuth: FirebaseAuth = FirebaseAuth.getInstance()
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
 
-        // Testinapilla avataan karttanäkymä
         val passedValue = intent.getStringExtra("login")
         //val passedValue = "true"
 
