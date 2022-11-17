@@ -1,0 +1,30 @@
+[
+    {
+        "geometry": {
+            "location": {
+                "lat": 65.0184492114875,
+                "lng": 25.46437679545802
+            }
+        },
+        "title": "Oulu on paska kaupunni"
+    },
+    {
+        "geometry": {
+            "location": {
+                "lat": 65.06129226204403,
+                "lng": 25.467655731700095
+            }
+        },
+        "title": "Eino was here"
+    },
+    {
+        "geometry": {
+            "location": {
+                "lat": 65.05756140198946,
+                "lng": 25.4677164692498
+            }
+        },
+        "title": "Kari on homo"
+    }
+]
+
