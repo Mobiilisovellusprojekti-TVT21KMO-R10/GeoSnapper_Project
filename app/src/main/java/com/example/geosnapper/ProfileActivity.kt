@@ -32,26 +32,26 @@ class ProfileActivity : AppCompatActivity() {
         var uid: String? = ""
         var myMessages: List<Any>? = listOf()
 
-        val db = Firebase.firestore
-        val usrMessage = "Jepajee"
 
-        val messageData = hashMapOf(
+        /*val messageData = hashMapOf(
             "uid" to "i69kfXgRYlR3EzhE4KHe9plDeVd2",
             "message" to usrMessage,
             "geoData" to com.google.android.gms.maps.model.LatLng(27.0, 64.0),
             "mediaLink" to "",
             "tier"  to 1,
             "created" to Timestamp(Date())
-        )
+        )*/
 
-        db.collection("messageData")
-            .add(messageData)
-            .addOnSuccessListener { documentReference ->
-                Log.d(TAG, "DocumentSnapchot added with ID: ${documentReference.id}")
-            }
-            .addOnFailureListener{ e ->
-                Log.w(TAG, "Error adding document", e)
-            }
+        val messageObject = MessageData("Juhuu",
+            "",
+            Timestamp(Date()),
+            com.google.android.gms.maps.model.LatLng(27.0,64.0),
+            1,
+            "i69kfXgRYlR3EzhE4KHe9plDeVd2")
+
+        val db = Database()
+
+        db.addMessage(messageObject)
 
         val user = FirebaseAuth.getInstance().currentUser
         user?.let{
@@ -60,6 +60,7 @@ class ProfileActivity : AppCompatActivity() {
             uid = user.uid
         }
 
+        /*
         var myArray: List<Any> = listOf()
         val collection = db.collection("messageData")
         val userObject = collection.whereEqualTo("uid", uid)
@@ -76,7 +77,7 @@ class ProfileActivity : AppCompatActivity() {
                 Log.w(TAG, "Error getting userData", exception)
             }
 
-
+*/
 
 
                 /*
