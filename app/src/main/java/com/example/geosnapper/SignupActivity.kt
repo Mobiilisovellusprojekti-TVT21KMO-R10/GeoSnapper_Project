@@ -47,7 +47,8 @@ class SignupActivity : AppCompatActivity() {
                             startActivity(intent);
                         }
                         else{
-                            Toast.makeText(this, it.exception.toString(), Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this, it.exception.toString(), Toast.LENGTH_LONG).show()
+                            Log.d("Signup Error", it.exception.toString())  // Toast ei jostain syystä tulosta koko virheilmoa niin lisäsin tulosteen lokiin
                         }
                     }
                 }

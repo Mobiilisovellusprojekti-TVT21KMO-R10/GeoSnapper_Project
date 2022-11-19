@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.example.geosnapper.app-mergeDebugResources-33:/values-v16/values-v16.xml",
+            "outputFile": "com.example.geosnapper.app-mergeDebugResources-34:/values-v16/values-v16.xml",
             "map": [
                 {
                     "source": "C:\\Users\\Tero\\.gradle\\caches\\transforms-3\\8198bb4a2dfb464766f0f9eb0c912401\\transformed\\appcompat-1.5.1\\res\\values-v16\\values-v16.xml",
