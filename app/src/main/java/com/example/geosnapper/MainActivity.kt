@@ -13,7 +13,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        /*
+
         val passedValue=intent.getStringExtra("login")
 
         if (passedValue == null) {
@@ -24,11 +24,5 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, MapActivity::class.java)
             startActivity(intent);
         }
-        */
-        binding.buttonTest1.setOnClickListener {
-            val intent = Intent(this, MapActivity::class.java)
-            startActivity(intent);
-        }
-
     }
 }
