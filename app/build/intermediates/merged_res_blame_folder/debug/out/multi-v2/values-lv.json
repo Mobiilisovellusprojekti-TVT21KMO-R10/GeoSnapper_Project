@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.example.geosnapper.app-mergeDebugResources-33:/values-lv/values-lv.xml",
+            "outputFile": "com.example.geosnapper.app-mergeDebugResources-34:/values-lv/values-lv.xml",
             "map": [
                 {
                     "source": "C:\\Users\\Tero\\.gradle\\caches\\transforms-3\\c4eeeb2244852149f4815b93222dcb5e\\transformed\\play-services-base-18.0.1\\res\\values-lv\\values.xml",

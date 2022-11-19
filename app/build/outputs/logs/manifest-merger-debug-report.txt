@@ -36,6 +36,7 @@ MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.5.1] C:\Users\Tero\.gradle
 MERGED from [androidx.lifecycle:lifecycle-viewmodel-savedstate:2.5.1] C:\Users\Tero\.gradle\caches\transforms-3\cbb616c08d3964c55222fb2bcaee8e0f\transformed\lifecycle-viewmodel-savedstate-2.5.1\AndroidManifest.xml:17:1-24:12
 MERGED from [androidx.core:core-ktx:1.8.0] C:\Users\Tero\.gradle\caches\transforms-3\dfad5113ad98fd7bb68479483ffeadcb\transformed\core-ktx-1.8.0\AndroidManifest.xml:2:1-9:12
 MERGED from [org.greenrobot:eventbus:3.3.1] C:\Users\Tero\.gradle\caches\transforms-3\ff3ebea08dad28bab05765ef0d6033ae\transformed\eventbus-3.3.1\AndroidManifest.xml:2:1-9:12
+MERGED from [com.google.maps.android:android-maps-utils:2.3.0] C:\Users\Tero\.gradle\caches\transforms-3\67ef8882e1e7248ed530a197689ee39f\transformed\android-maps-utils-2.3.0\AndroidManifest.xml:2:1-15:12
 MERGED from [androidx.emoji2:emoji2-views-helper:1.2.0] C:\Users\Tero\.gradle\caches\transforms-3\744fa3dd01f432632cf6cd2f1e6863f8\transformed\emoji2-views-helper-1.2.0\AndroidManifest.xml:2:1-7:12
 MERGED from [androidx.emoji2:emoji2:1.2.0] C:\Users\Tero\.gradle\caches\transforms-3\586097eb8963b3e6d06fc1aef210c432\transformed\emoji2-1.2.0\AndroidManifest.xml:17:1-35:12
 MERGED from [androidx.drawerlayout:drawerlayout:1.1.1] C:\Users\Tero\.gradle\caches\transforms-3\1bd4249f0e029954bbbf81502ee2eac3\transformed\drawerlayout-1.1.1\AndroidManifest.xml:17:1-24:12
@@ -128,6 +129,8 @@ MERGED from [com.google.android.gms:play-services-tasks:18.0.1] C:\Users\Tero\.g
 MERGED from [com.google.android.gms:play-services-tasks:18.0.1] C:\Users\Tero\.gradle\caches\transforms-3\58ec6b23ec8fc10e0c9ae1005f5d94d7\transformed\play-services-tasks-18.0.1\AndroidManifest.xml:5:5-20
 MERGED from [com.google.android.gms:play-services-basement:18.1.0] C:\Users\Tero\.gradle\caches\transforms-3\4bc53d1aa17b4daaecf6fcfbfc918a4e\transformed\play-services-basement-18.1.0\AndroidManifest.xml:20:5-24:19
 MERGED from [com.google.android.gms:play-services-basement:18.1.0] C:\Users\Tero\.gradle\caches\transforms-3\4bc53d1aa17b4daaecf6fcfbfc918a4e\transformed\play-services-basement-18.1.0\AndroidManifest.xml:20:5-24:19
+MERGED from [com.google.maps.android:android-maps-utils:2.3.0] C:\Users\Tero\.gradle\caches\transforms-3\67ef8882e1e7248ed530a197689ee39f\transformed\android-maps-utils-2.3.0\AndroidManifest.xml:9:5-13:19
+MERGED from [com.google.maps.android:android-maps-utils:2.3.0] C:\Users\Tero\.gradle\caches\transforms-3\67ef8882e1e7248ed530a197689ee39f\transformed\android-maps-utils-2.3.0\AndroidManifest.xml:9:5-13:19
 MERGED from [androidx.emoji2:emoji2:1.2.0] C:\Users\Tero\.gradle\caches\transforms-3\586097eb8963b3e6d06fc1aef210c432\transformed\emoji2-1.2.0\AndroidManifest.xml:23:5-33:19
 MERGED from [androidx.emoji2:emoji2:1.2.0] C:\Users\Tero\.gradle\caches\transforms-3\586097eb8963b3e6d06fc1aef210c432\transformed\emoji2-1.2.0\AndroidManifest.xml:23:5-33:19
 MERGED from [androidx.core:core:1.8.0] C:\Users\Tero\.gradle\caches\transforms-3\aa0ea1d859df73f62ff4b5b95d5e1651\transformed\core-1.8.0\AndroidManifest.xml:24:5-89
@@ -264,6 +267,8 @@ MERGED from [androidx.core:core-ktx:1.8.0] C:\Users\Tero\.gradle\caches\transfor
 MERGED from [androidx.core:core-ktx:1.8.0] C:\Users\Tero\.gradle\caches\transforms-3\dfad5113ad98fd7bb68479483ffeadcb\transformed\core-ktx-1.8.0\AndroidManifest.xml:5:5-7:41
 MERGED from [org.greenrobot:eventbus:3.3.1] C:\Users\Tero\.gradle\caches\transforms-3\ff3ebea08dad28bab05765ef0d6033ae\transformed\eventbus-3.3.1\AndroidManifest.xml:5:5-7:41
 MERGED from [org.greenrobot:eventbus:3.3.1] C:\Users\Tero\.gradle\caches\transforms-3\ff3ebea08dad28bab05765ef0d6033ae\transformed\eventbus-3.3.1\AndroidManifest.xml:5:5-7:41
+MERGED from [com.google.maps.android:android-maps-utils:2.3.0] C:\Users\Tero\.gradle\caches\transforms-3\67ef8882e1e7248ed530a197689ee39f\transformed\android-maps-utils-2.3.0\AndroidManifest.xml:5:5-7:41
+MERGED from [com.google.maps.android:android-maps-utils:2.3.0] C:\Users\Tero\.gradle\caches\transforms-3\67ef8882e1e7248ed530a197689ee39f\transformed\android-maps-utils-2.3.0\AndroidManifest.xml:5:5-7:41
 MERGED from [androidx.emoji2:emoji2-views-helper:1.2.0] C:\Users\Tero\.gradle\caches\transforms-3\744fa3dd01f432632cf6cd2f1e6863f8\transformed\emoji2-views-helper-1.2.0\AndroidManifest.xml:5:5-44
 MERGED from [androidx.emoji2:emoji2-views-helper:1.2.0] C:\Users\Tero\.gradle\caches\transforms-3\744fa3dd01f432632cf6cd2f1e6863f8\transformed\emoji2-views-helper-1.2.0\AndroidManifest.xml:5:5-44
 MERGED from [androidx.emoji2:emoji2:1.2.0] C:\Users\Tero\.gradle\caches\transforms-3\586097eb8963b3e6d06fc1aef210c432\transformed\emoji2-1.2.0\AndroidManifest.xml:21:5-44
@@ -444,6 +449,8 @@ ADDED from [com.google.firebase:firebase-common:20.2.0] C:\Users\Tero\.gradle\ca
 		ADDED from [com.google.firebase:firebase-common:20.2.0] C:\Users\Tero\.gradle\caches\transforms-3\65a2a1087c85a488adcebf4cca2a427e\transformed\firebase-common-20.2.0\AndroidManifest.xml:26:13-77
 meta-data#com.google.android.gms.version
 ADDED from [com.google.android.gms:play-services-basement:18.1.0] C:\Users\Tero\.gradle\caches\transforms-3\4bc53d1aa17b4daaecf6fcfbfc918a4e\transformed\play-services-basement-18.1.0\AndroidManifest.xml:21:9-23:69
+MERGED from [com.google.maps.android:android-maps-utils:2.3.0] C:\Users\Tero\.gradle\caches\transforms-3\67ef8882e1e7248ed530a197689ee39f\transformed\android-maps-utils-2.3.0\AndroidManifest.xml:10:9-12:69
+MERGED from [com.google.maps.android:android-maps-utils:2.3.0] C:\Users\Tero\.gradle\caches\transforms-3\67ef8882e1e7248ed530a197689ee39f\transformed\android-maps-utils-2.3.0\AndroidManifest.xml:10:9-12:69
 	android:value
 		ADDED from [com.google.android.gms:play-services-basement:18.1.0] C:\Users\Tero\.gradle\caches\transforms-3\4bc53d1aa17b4daaecf6fcfbfc918a4e\transformed\play-services-basement-18.1.0\AndroidManifest.xml:23:13-66
 	android:name

@@ -18,7 +18,7 @@ class LocationService : Service() {
     override fun onCreate() {
         super.onCreate()
         client = LocationServices.getFusedLocationProviderClient(this)
-        locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 1000)
+        locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 10000)
             .setIntervalMillis(500)
             .build()
         locationCallback = object: LocationCallback(){
@@ -32,7 +32,7 @@ class LocationService : Service() {
         }
     }
 
-    @Suppress("MissingPermission")  // SELVITÄ MIKS VAATII TÄTÄ. TOIMII SILTI KUITENKIN
+    @Suppress("MissingPermission")
     fun locationRequest(){
         try {
             client?.requestLocationUpdates(
