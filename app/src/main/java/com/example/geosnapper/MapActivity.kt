@@ -177,18 +177,12 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
     @SuppressLint("MissingPermission")
     private fun requestNewLocationData() {
         val locationRequest = LocationRequest()
-        //locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-        //locationRequest.interval = 0
-        //locationRequest.fastestInterval = 0
-        //locationRequest.numUpdates = 1
         client!!.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper())
     }
 
     private val locationCallback = object : LocationCallback() {
         override fun onLocationResult(locationResult: LocationResult) {
             val location: Location? = locationResult.lastLocation
-            binding.buttonTest1.text = location?.latitude.toString()
-            binding.buttonTest2.text = location?.longitude.toString()
             currentLocation = location?.let { LatLng(location.longitude, location.longitude) }!!
             updateMap()
         }
