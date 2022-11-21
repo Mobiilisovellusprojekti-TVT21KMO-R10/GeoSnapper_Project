@@ -1,4 +1,28 @@
 <resources>
     <string name="app_name">geoSnapper</string>
     <string name="title_activity_map">MapActivity</string>
+    <string name="test_string">Moikkulis moi</string>
+    <string name="test_name">Timo Testipää</string>
+    <string name="company_name">GeoSnapper Oy</string>
+    <string name="lorem_ipsum">
+        Architecto perferendis sit dolore rerum consectetur mollitia in sed. Exercitationem maxime totam quidem. Quam assumenda doloremque sit tempore cupiditate et. Autem dicta qui et id dolorum architecto est. Ea harum dolores est officiis aut.
+        Facilis dolores quia voluptas dolore ipsa sed. Et necessitatibus architecto deserunt minima voluptatem dolorem. Aut laudantium quam tempora repellat et non molestiae et. Rerum necessitatibus autem ad.
+        Perspiciatis quos facere dolorem quo quas est. Sed sed voluptatem deleniti. Quae ut dolore et illo minus natus rerum harum.
+        Nihil modi molestias incidunt voluptatem. Consequuntur id aperiam error odit aut molestiae. Aut ipsa aut maxime perspiciatis sit molestiae quasi. Consequatur sed est qui quia rem.
+        Nihil et eos et vel. Dolorem autem quisquam impedit iste dolorem natus eos dolores. Provident cum molestiae suscipit sit corrupti omnis. Perferendis placeat ut enim ullam in.
+    </string>
+    <!-- Preference Titles -->
+    <string name="messages_header">Messages</string>
+    <string name="sync_header">Sync</string>
+
+    <!-- Messages Preferences -->
+    <string name="signature_title">Your signature</string>
+    <string name="reply_title">Default reply action</string>
+
+    <!-- Sync Preferences -->
+    <string name="sync_title">Sync email periodically</string>
+    <string name="attachment_title">Download incoming attachments</string>
+    <string name="attachment_summary_on">Automatically download attachments for incoming emails
+    </string>
+    <string name="attachment_summary_off">Only download attachments when manually requested</string>
 </resources>
