@@ -6,7 +6,7 @@ import com.google.firebase.Timestamp
 data class MessageData(val message: String,
                        val mediaLink: String,
                        val created: Timestamp,
-                       val geoData: String,
+                       val geoData: LatLng,
                        val tier: Int,
                        val uid: String)
 

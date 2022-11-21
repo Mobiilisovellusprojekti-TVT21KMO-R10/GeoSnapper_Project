@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.util.Log
 import com.example.geosnapper.databinding.ActivityLoginBinding
 import com.example.geosnapper.databinding.ActivityMediaBinding
+import com.google.firebase.Timestamp
+import java.util.*
 import kotlin.math.log
 
 class MediaActivity : AppCompatActivity() {
@@ -12,6 +14,8 @@ class MediaActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMediaBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
+        val db = Database()
         super.onCreate(savedInstanceState)
 
         binding = ActivityMediaBinding.inflate(layoutInflater)
@@ -23,6 +27,8 @@ class MediaActivity : AppCompatActivity() {
 
         binding.btnSubmit.setOnClickListener{
             val message = binding.editText.text.toString()
+            val messageObject = MessageData(message, "", Timestamp(Date()), "", 1, "i69kfXgRYlR3EzhE4KHe9plDeVd2");
+            db.addMessage(messageObject)
             Log.d("Media Activity", message)
         }
     }

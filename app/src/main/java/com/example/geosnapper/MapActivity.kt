@@ -66,8 +66,8 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
             startActivity(intent)
         }
         binding.buttonTest2.setOnClickListener {
-            //val intent = Intent(this, MapActivity::class.java)
-            //startActivity(intent)
+            val intent = Intent(this, ProfileActivity::class.java)
+            startActivity(intent)
         }
     }
 

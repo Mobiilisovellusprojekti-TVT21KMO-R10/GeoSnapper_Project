@@ -26,7 +26,7 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, SignupActivity::class.java)
             startActivity(intent);
         } else if (passedValue == "true") {
-            val intent = Intent(this, ProfileActivity::class.java)
+            val intent = Intent(this, MapActivity::class.java)
             startActivity(intent);
         }
     }
