@@ -32,11 +32,13 @@ class LoginActivity : AppCompatActivity() {
         }
 
         binding.btnSubmit.setOnClickListener{
-            val email = binding.etEmail.text.toString()
-            val password = binding.etPassword.text.toString()
+//            val email = binding.etEmail.text.toString()
+//            val password = binding.etPassword.text.toString()
+            // iffin sisään tulee julkaisuversiossa if(email.isNotEmpty() && password.isNotEmpty())
+            val temporaryCondition = true
 
-            if (email.isNotEmpty() && password.isNotEmpty()){
-                    firebaseAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener {
+            if (temporaryCondition){
+                    firebaseAuth.signInWithEmailAndPassword("teronsahkoposti@gmail.com", "tero1234").addOnCompleteListener {
                         if (it.isSuccessful){
                             Log.d("Login Activity", "Login oli muuten succesful")
                             val intent = Intent(this, MainActivity::class.java)

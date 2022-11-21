@@ -62,8 +62,8 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
 
         // TÄSSÄ ON NAPIT JOITA VOI KÄYTTÄÄ VALIKKOJEN YMS AVAAMISEEN
         binding.buttonTest1.setOnClickListener {
-            //val intent = Intent(this, MapActivity::class.java)
-            //startActivity(intent)
+            val intent = Intent(this, MediaActivity::class.java)
+            startActivity(intent)
         }
         binding.buttonTest2.setOnClickListener {
             //val intent = Intent(this, MapActivity::class.java)

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MediaActivity">
+  <LinearLayout
+      android:id="@+id/ll_main_layout"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:gravity="center"
+      android:background="#F0EBCE"
+      android:padding="25dp"
+      android:orientation="vertical">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="25dp"
+        android:textColor="#395144"
+        android:padding="10dp"
+        android:text="Leave a GeoSnap"/>
+
+    <EditText
+        android:id="@+id/edit_text"
+        android:background="#D3D3D3"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:inputType="text|textMultiLine"
+        android:gravity="top"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="25dp"
+        android:orientation="horizontal">
+
+    <Button
+        android:id="@+id/btn_reset"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:insetLeft="10dp"
+        android:text="Reset"
+        android:textAllCaps="false" />
+
+    <Button
+        android:id="@+id/btn_submit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:insetLeft="10dp"
+        android:text="Submit"
+        android:textAllCaps="false" />
+
+    </LinearLayout>
+
+
+  </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
