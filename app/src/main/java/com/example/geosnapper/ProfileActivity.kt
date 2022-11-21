@@ -6,13 +6,18 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.annotation.RequiresApi
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.geosnapper.databinding.ActivityProfileBinding
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.google.gson.Gson
 import com.google.type.LatLng
 import java.util.*
 
@@ -33,25 +38,36 @@ class ProfileActivity : AppCompatActivity() {
         var myMessages: List<Any>? = listOf()
 
 
-        /*val messageData = hashMapOf(
-            "uid" to "i69kfXgRYlR3EzhE4KHe9plDeVd2",
-            "message" to usrMessage,
-            "geoData" to com.google.android.gms.maps.model.LatLng(27.0, 64.0),
-            "mediaLink" to "",
-            "tier"  to 1,
-            "created" to Timestamp(Date())
-        )*/
+        fun fetchMessages(uid: String?){
+            val db = Firebase.firestore
+
+            val collection = db.collection("messageData")
+            collection.whereEqualTo("uid", uid)
+                .get()
+                .addOnSuccessListener { documents ->
+                    for (document in documents) {
+                        val gson = Gson()
+                        val messageData = gson.toJson(document.data)
+
+                        val messageView = TextView(this)
+                        messageView.text = messageData
+
+                        binding.linearLayoutProfileInner.addView(messageView)
+
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    Log.w(TAG, "Error getting message data", exception)
+                }
+
+        }
 
         val messageObject = MessageData("Juhuu",
             "",
             Timestamp(Date()),
-            com.google.android.gms.maps.model.LatLng(27.0,64.0),
+            com.google.android.gms.maps.model.LatLng(27.0,64.0).toString(),
             1,
             "i69kfXgRYlR3EzhE4KHe9plDeVd2")
-
-        val db = Database()
-
-        db.addMessage(messageObject)
 
         val user = FirebaseAuth.getInstance().currentUser
         user?.let{
@@ -60,44 +76,22 @@ class ProfileActivity : AppCompatActivity() {
             uid = user.uid
         }
 
-        /*
-        var myArray: List<Any> = listOf()
-        val collection = db.collection("messageData")
-        val userObject = collection.whereEqualTo("uid", uid)
-            .get()
-            .addOnSuccessListener { documents ->
-                for (document in documents) {
-                    Log.d(TAG, "${document.data}")
-                }
-                myArray.map {
-                     }
-                Log.d("myArray", myArray.toString())
-            }
-            .addOnFailureListener { exception ->
-                Log.w(TAG, "Error getting userData", exception)
-            }
+        val db = Database()
 
-*/
-
-
-                /*
-            .get()
-            .addOnSuccessListener { documents ->
-                for (document in documents) {
-                    Log.d(TAG, "${document.data}")
-                }
-            }
-            .addOnFailureListener { exception ->
-                Log.w(TAG, "Error getting userData", exception)
-            }*/
+        //db.addMessage(messageObject)
+        //fetchMessages(uid)
 
 
         binding.collapsingToolbarProfileView.title = email
 
 
         Log.d("Profile Activity","uid = ${uid}" )
+        binding.buttonShowMessages.setOnClickListener {
+            fetchMessages(uid)
+        }
 
         binding.buttonToSettings.setOnClickListener() {
-            startActivity(Intent(this, SettingsActivity::class.java))     }
+            startActivity(Intent(this, SettingsActivity::class.java))
+        }
     }
 }

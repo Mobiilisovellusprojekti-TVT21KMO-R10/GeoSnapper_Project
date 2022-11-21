@@ -1,9 +1,11 @@
 package com.example.geosnapper
 
 import android.content.ContentValues
+import android.content.ContentValues.TAG
 import android.util.Log
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.google.gson.Gson
 
 class Database {
     private val db = Firebase.firestore
@@ -18,4 +20,6 @@ class Database {
                 Log.w(ContentValues.TAG, "Error adding document", e)
             }
     }
+
+
 }
