@@ -27,7 +27,7 @@ class MediaActivity : AppCompatActivity() {
 
         binding.btnSubmit.setOnClickListener{
             val message = binding.editText.text.toString()
-            val messageObject = MessageData(message, "", Timestamp(Date()), "", 1, "i69kfXgRYlR3EzhE4KHe9plDeVd2");
+            val messageObject = MessageData(message, "", Timestamp(Date()), com.google.android.gms.maps.model.LatLng(27.0,64.0), 1, "i69kfXgRYlR3EzhE4KHe9plDeVd2");
             db.addMessage(messageObject)
             Log.d("Media Activity", message)
         }

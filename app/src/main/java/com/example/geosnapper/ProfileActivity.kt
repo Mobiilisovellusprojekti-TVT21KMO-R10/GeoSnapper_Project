@@ -65,7 +65,7 @@ class ProfileActivity : AppCompatActivity() {
         val messageObject = MessageData("Juhuu",
             "",
             Timestamp(Date()),
-            com.google.android.gms.maps.model.LatLng(27.0,64.0).toString(),
+            com.google.android.gms.maps.model.LatLng(27.0,64.0),
             1,
             "i69kfXgRYlR3EzhE4KHe9plDeVd2")
 
