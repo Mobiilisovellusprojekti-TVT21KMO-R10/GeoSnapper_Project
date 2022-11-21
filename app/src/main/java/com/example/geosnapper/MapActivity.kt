@@ -39,22 +39,19 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
     private lateinit var binding: ActivityMapBinding
     private lateinit var service: Intent
     private lateinit var client: FusedLocationProviderClient
-    // MARKKERIEN PIIRTOA, NÄITÄKIN EHKÄ OMAAN LUOKKAAN
-    private val posts: List<Post> by lazy {         // TÄÄ ON VÄLIAIKAINEN RATKAISU TESTAILUA VARTEN
-        PostsReader(this).read()
-    }
-    private var setMapOnUserLocation = true         // PURKKAVIRITYKSEN TIETO FUNKTIOLLE JOLLA KARTTA PÄIVITETÄÄN KUN SAADAAN KÄYTTÄJÄN SIJAINTI. POISTOON KUN KEKSII PAREMMAN RATKAISUN
-    private var currentLocation: LatLng = LatLng(65.0, 25.5)
+    private var setMapOnUserLocation = true
     private var selectedMarker: Marker? = null
     private val PERMISSION_ID = 42
     private var locationPermissions = false
 
+    private val posts: List<Post> by lazy {         // TÄÄ ON VÄLIAIKAINEN RATKAISU TESTAILUA VARTEN
+        PostsReader(this).read()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         client = LocationServices.getFusedLocationProviderClient(this)
-
         binding = ActivityMapBinding.inflate(layoutInflater)
         setContentView(binding.root)
         service = Intent(this, LocationService::class.java)
@@ -63,15 +60,14 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
-
         // TÄSSÄ ON NAPIT JOITA VOI KÄYTTÄÄ VALIKKOJEN YMS AVAAMISEEN
         binding.buttonTest1.setOnClickListener {
             //val intent = Intent(this, MapActivity::class.java)
-            //startActivity(intent);
+            //startActivity(intent)
         }
         binding.buttonTest2.setOnClickListener {
             //val intent = Intent(this, MapActivity::class.java)
-            //startActivity(intent);
+            //startActivity(intent)
         }
     }
 
@@ -82,24 +78,26 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
         map = googleMap
         map.uiSettings.isZoomControlsEnabled = true
         map.setOnMarkerClickListener(this)
-        getLocation()
+        updateMap(getLocation())
     }
 
-    private fun updateMap() {   // EHKÄ KAIPAA VIILAAMISTA
-        map.clear()     // HELPPO KONSTI. TOIMII TOKI NOIN KUNHAN KARTTAAN EI PIIRRETÄ MUUTA KUIN NOI MARKERIT
-        if (setMapOnUserLocation) {
-            map.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 12f))
-            setMapOnUserLocation = false
+    private fun updateMap(currentLocation: LatLng?) {   // EHKÄ KAIPAA VIILAAMISTA
+        map.clear()
+        if (currentLocation != null) {
+            if (setMapOnUserLocation) {
+                map.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 12f))
+                setMapOnUserLocation = false
+            }
+            placeMarkerOnMap(currentLocation, "You")
+            addMarkers()
         }
-        placeMarkerOnMap(currentLocation, "You")
-        addMarkers()
     }
 
-    private fun addMarkers() {
+    private fun addMarkers() {      // TESTIVAIHEESSA
         val markers = MarkerToPost().listHandler(posts)
         markers.forEach { marker ->
             //if (calculateDistance(currentLocation, post.coordinates) < drawDistance) {
-            placeMarkerOnMap(marker.coordinates, "POST ID: "+marker.postId )        //TESTIVAIHEESSA, KUN EI OLE VIELÄ TOIMINNALLISUUTTA, JOLLA AVATAAN POSTAUS
+            placeMarkerOnMap(marker.coordinates, "POST ID: " + marker.postId )
             //}
         }
     }
@@ -110,9 +108,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
 
     override fun onMarkerClick(p0: Marker) = false
 
-
-    // LOKAATION HAKUA
-    // LUVAN TARKISTUS JA HAKU PAKOLLISIA
     private fun checkPermissions(): Boolean {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
             == PackageManager.PERMISSION_GRANTED &&
@@ -137,58 +132,28 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == PERMISSION_ID) {
             if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                getLocation()
                 startService(service)
+                locationPermissions = true
             }
         }
     }
 
-    // NÄÄ LOKAATIOJUTUT TÄSTÄ ALASPÄIN ON OPTIONAALISIA. LÄHINNÄ SEN VUOKSI ETTÄ KOITIN POISTAA SEN VIIVEEN MIKÄ MENEE KUN LOCATIONSERVICE ANTAA ENSIMÄISEN SIJAINTITIEDON
-    private fun isLocationEnabled(): Boolean {
-        val locationManager: LocationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(
-            LocationManager.NETWORK_PROVIDER
-        )
-    }
-
     @SuppressLint("MissingPermission")
-    private fun getLocation() {
+    private fun getLocation(): LatLng? {
+        var currentLocation: LatLng? = null
         if (checkPermissions()) {
-            if (isLocationEnabled()) {
-                client.lastLocation.addOnCompleteListener(this) { task ->
-                    val location: Location? = task.result
-                    if (location == null) {
-                        requestNewLocationData()
-                    }
-                    else {
-                        currentLocation = LatLng(location.latitude, location.longitude)
-                        updateMap()
-                    }
+            client.lastLocation.addOnCompleteListener(this) { task ->
+                val location: Location? = task.result
+                if (location == null) {
+                    Toast.makeText(this, "failed to get location", Toast.LENGTH_LONG).show()
+                }
+                else {
+                    currentLocation = LatLng(location.latitude, location.longitude)
                 }
             }
-            else {
-                Toast.makeText(this, "Turn on location", Toast.LENGTH_LONG).show()
-                val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-                startActivity(intent)
-            }
         }
+        return currentLocation
     }
-
-    @SuppressLint("MissingPermission")
-    private fun requestNewLocationData() {
-        val locationRequest = LocationRequest()
-        client!!.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper())
-    }
-
-    private val locationCallback = object : LocationCallback() {
-        override fun onLocationResult(locationResult: LocationResult) {
-            val location: Location? = locationResult.lastLocation
-            currentLocation = location?.let { LatLng(location.longitude, location.longitude) }!!
-            updateMap()
-        }
-    }
-
-
 
     override fun onStart() {
         super.onStart()
@@ -199,8 +164,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
 
     @Subscribe
     fun receiveLocationEvent(locationEvent: LocationEvent) {
-        currentLocation = LatLng(locationEvent.latitude!!, locationEvent.longitude!!)
-        updateMap()
+        updateMap(LatLng(locationEvent.latitude!!, locationEvent.longitude!!))
     }
 
     override fun onDestroy() {
