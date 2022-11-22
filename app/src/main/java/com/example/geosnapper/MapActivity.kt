@@ -11,10 +11,14 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Looper
 import android.provider.Settings
+import android.view.GestureDetector
+import android.view.MotionEvent
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.view.GestureDetectorCompat
+import androidx.core.view.MotionEventCompat
 import com.example.geosnapper.Events.LocationEvent
 import com.example.geosnapper.Post.Post
 import com.example.geosnapper.Post.PostsReader
@@ -30,8 +34,10 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.tasks.Tasks.await
+import com.google.firebase.auth.FirebaseAuth
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
+import java.lang.Math.abs
 
 class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
@@ -39,6 +45,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
     private lateinit var binding: ActivityMapBinding
     private lateinit var service: Intent
     private lateinit var client: FusedLocationProviderClient
+    private lateinit var firebaseAuth: FirebaseAuth
     private var setMapOnUserLocation = true
     private var selectedMarker: Marker? = null
     private val PERMISSION_ID = 42
@@ -51,6 +58,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        firebaseAuth = FirebaseAuth.getInstance()
         client = LocationServices.getFusedLocationProviderClient(this)
         binding = ActivityMapBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -60,6 +68,9 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
+        // Käyttäjän USERID on tässä muuttujassa
+        val passedValue = intent.getStringExtra("userId")
+
         // TÄSSÄ ON NAPIT JOITA VOI KÄYTTÄÄ VALIKKOJEN YMS AVAAMISEEN
         binding.buttonTest1.setOnClickListener {
             val intent = Intent(this, MediaActivity::class.java)
@@ -67,6 +78,12 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
         }
         binding.buttonTest2.setOnClickListener {
             val intent = Intent(this, ProfileActivity::class.java)
+            startActivity(intent)
+        }
+        binding.buttonLogout.setOnClickListener {
+            val intent = Intent(this, MainActivity::class.java)
+            intent.putExtra("userId", "null")
+            firebaseAuth.signOut()
             startActivity(intent)
         }
     }
@@ -171,5 +188,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
         super.onDestroy()
         stopService(service)
     }
+
 }
 
