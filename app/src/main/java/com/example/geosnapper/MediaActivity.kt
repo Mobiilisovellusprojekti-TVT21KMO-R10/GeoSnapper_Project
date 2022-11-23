@@ -7,6 +7,7 @@ import com.example.geosnapper.databinding.ActivityLoginBinding
 import com.example.geosnapper.databinding.ActivityMediaBinding
 import com.google.firebase.Timestamp
 import java.util.*
+import com.google.android.gms.maps.model.LatLng
 import kotlin.math.log
 
 class MediaActivity : AppCompatActivity() {
@@ -27,7 +28,7 @@ class MediaActivity : AppCompatActivity() {
 
         binding.btnSubmit.setOnClickListener{
             val message = binding.editText.text.toString()
-            val messageObject = MessageData(message, "", Timestamp(Date()), com.google.android.gms.maps.model.LatLng(27.0,64.0), 1, "i69kfXgRYlR3EzhE4KHe9plDeVd2");
+            val messageObject = MessageData(message, "", Timestamp(Date()), LatLng(27.0,64.0), 1, "i69kfXgRYlR3EzhE4KHe9plDeVd2");
             db.addMessage(messageObject)
             Log.d("Media Activity", message)
         }

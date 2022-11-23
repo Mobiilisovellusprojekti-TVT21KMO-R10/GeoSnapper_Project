@@ -11,32 +11,34 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.geosnapper.Post.PostsReader
 import com.example.geosnapper.databinding.ActivityProfileBinding
+import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
-import com.google.type.LatLng
+
 import java.util.*
 
 class ProfileActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityProfileBinding
 
+
     @RequiresApi(Build.VERSION_CODES.P)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityProfileBinding.inflate(layoutInflater)
         val view = binding.root
+        val compoundMessageView = CompoundMessageView(this)
+
         setContentView(view)
 
-        var name: String? = ""
         var email: String? = ""
         var uid: String? = ""
-        var myMessages: List<Any>? = listOf()
-
 
         fun fetchMessages(uid: String?){
             val db = Firebase.firestore
@@ -47,12 +49,28 @@ class ProfileActivity : AppCompatActivity() {
                 .addOnSuccessListener { documents ->
                     for (document in documents) {
                         val gson = Gson()
+
                         val messageData = gson.toJson(document.data)
 
-                        val messageView = TextView(this)
-                        messageView.text = messageData
+                        val testData = gson.fromJson(messageData, MessageData::class.java)
 
-                        binding.linearLayoutProfileInner.addView(messageView)
+                        Log.d("MESSAGEDATA", "$testData")
+
+                        //val messageView = binding.clMessageInfoBase
+
+                        compoundMessageView.message = testData.message
+                        compoundMessageView.created = testData.created.toString()
+                        compoundMessageView.geoData = testData.geoData.toString()
+
+                        //TODO: Selvitä, miksi herjaa tätä: "java.lang.IllegalStateException: The specified child already has a parent. You must call removeView() on the child's parent first."
+
+                        /*
+                        binding.tvMessage.text = testData.message
+                        binding.tvCreated.text = testData.created.toString()
+                        binding.tvGeoData.text = testData.geoData.toString()
+                        */
+
+                        binding.linearLayoutProfileInner.addView(compoundMessageView)
 
                     }
                 }
@@ -65,13 +83,12 @@ class ProfileActivity : AppCompatActivity() {
         val messageObject = MessageData("Juhuu",
             "",
             Timestamp(Date()),
-            com.google.android.gms.maps.model.LatLng(27.0,64.0),
+            LatLng(27.0,64.0),
             1,
             "i69kfXgRYlR3EzhE4KHe9plDeVd2")
 
         val user = FirebaseAuth.getInstance().currentUser
         user?.let{
-            name = user.displayName
             email = user.email
             uid = user.uid
         }
@@ -95,3 +112,4 @@ class ProfileActivity : AppCompatActivity() {
         }
     }
 }
+
