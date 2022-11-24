@@ -9,17 +9,16 @@ import android.location.Location
 import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
-import android.os.Looper
-import android.provider.Settings
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.example.geosnapper.Events.LocationEvent
+import com.example.geosnapper.Marker.MarkerToPost
 import com.example.geosnapper.Post.Post
 import com.example.geosnapper.Post.PostsReader
 import com.example.geosnapper.Services.LocationService
-import com.example.geosnapper.Marker.MarkerToPost
 import com.example.geosnapper.databinding.ActivityMapBinding
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -29,9 +28,9 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
-import com.google.android.gms.tasks.Tasks.await
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
+import android.provider.Settings
 
 class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
@@ -42,11 +41,33 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
     private var setMapOnUserLocation = true
     private var selectedMarker: Marker? = null
     private val PERMISSION_ID = 42
-    private var locationPermissions = false
+    private var locationPermission = false
+    private var userLocation = LatLng(0.0, 0.0)
 
     private val posts: List<Post> by lazy {         // TÄÄ ON VÄLIAIKAINEN RATKAISU TESTAILUA VARTEN
         PostsReader(this).read()
     }
+
+
+    private val backgroundLocation = registerForActivityResult(ActivityResultContracts.RequestPermission()) {
+        if (it) {
+        }
+    }
+    private val locationPermissions = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
+        when {
+            it.getOrDefault(android.Manifest.permission.ACCESS_COARSE_LOCATION, false) -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED) {
+                        backgroundLocation.launch(android.Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+                    }
+                }
+            }
+            it.getOrDefault(android.Manifest.permission.ACCESS_FINE_LOCATION, false) -> {
+            }
+        }
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,7 +76,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
         binding = ActivityMapBinding.inflate(layoutInflater)
         setContentView(binding.root)
         service = Intent(this, LocationService::class.java)
-        locationPermissions = checkPermissions()
+        locationPermission = checkPermissions()
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
@@ -81,7 +102,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
         updateMap(getLocation())
     }
 
-    private fun updateMap(currentLocation: LatLng?) {   // EHKÄ KAIPAA VIILAAMISTA
+    private fun updateMap(currentLocation: LatLng?) {   // KAIPAA VIILAAMISTA, EI TOIMI HYVIN NÄIN
         map.clear()
         if (currentLocation != null) {
             if (setMapOnUserLocation) {
@@ -93,12 +114,19 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
         }
     }
 
+    // MARKKERIEN PIIRTOETÄISYYDEN TESTAILUA VERSIO 3
+    private fun calculateDistanceInMeters(post: LatLng): Float {
+        val results = FloatArray(1)
+        Location.distanceBetween(userLocation.latitude, userLocation.longitude, post.latitude, post.longitude, results)
+        return results[0]
+    }
+
     private fun addMarkers() {      // TESTIVAIHEESSA
         val markers = MarkerToPost().listHandler(posts)
         markers.forEach { marker ->
-            //if (calculateDistance(currentLocation, post.coordinates) < drawDistance) {
-            placeMarkerOnMap(marker.coordinates, "POST ID: " + marker.postId )
-            //}
+            val distance = calculateDistanceInMeters(marker.coordinates).toString()
+            val post = posts.find {it.postId == marker.postId}
+            placeMarkerOnMap(marker.coordinates, post!!.message + ", Etäisyys käyttäjästä: " + distance + " m")
         }
     }
 
@@ -106,6 +134,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
         map.addMarker(MarkerOptions().position(coordinates).title(title))
     }
 
+    // TÄÄ ON TULEVAA MARKKERIEN / POSTIEN AVAAMISTA VARTEN. VOI OLLA TURHAKIN
     override fun onMarkerClick(p0: Marker) = false
 
     private fun checkPermissions(): Boolean {
@@ -121,35 +150,50 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
     }
 
     private fun requestPermissions() {
-        ActivityCompat.requestPermissions(this, arrayOf(
-                Manifest.permission.ACCESS_COARSE_LOCATION,
-                Manifest.permission.ACCESS_FINE_LOCATION),
-                PERMISSION_ID
+        Toast.makeText(this, "Please allow the app to use location data", Toast.LENGTH_LONG).show()
+        locationPermissions.launch(
+            arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION)
         )
     }
 
+    // TÄMÄ EI JOSTAIN SYYSTÄ TOIMI KUN KÄYTTÄÄ SERVICE-LUOKAN VAATIMAAN LUPIEN HAKUSYNTAKSIA. EN YMMÄRRÄ MIKSI
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == PERMISSION_ID) {
             if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                 startService(service)
-                locationPermissions = true
+                locationPermission = true
             }
         }
+    }
+
+    private fun isLocationEnabled(): Boolean {
+        val locationManager: LocationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(
+            LocationManager.NETWORK_PROVIDER
+        )
     }
 
     @SuppressLint("MissingPermission")
     private fun getLocation(): LatLng? {
         var currentLocation: LatLng? = null
         if (checkPermissions()) {
-            client.lastLocation.addOnCompleteListener(this) { task ->
-                val location: Location? = task.result
-                if (location == null) {
-                    Toast.makeText(this, "failed to get location", Toast.LENGTH_LONG).show()
+            if (isLocationEnabled()) {
+                client.lastLocation.addOnCompleteListener(this) { task ->
+                    val location: Location? = task.result
+                    if (location == null) {
+                        Toast.makeText(this, "failed to get location", Toast.LENGTH_LONG).show()
+                    }
+                    else {
+                        currentLocation = LatLng(location.latitude, location.longitude)
+                        userLocation = currentLocation as LatLng
+                    }
                 }
-                else {
-                    currentLocation = LatLng(location.latitude, location.longitude)
-                }
+            }
+            else {
+                Toast.makeText(this, "Turn on location", Toast.LENGTH_LONG).show()
+                val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+                startActivity(intent)
             }
         }
         return currentLocation
@@ -157,14 +201,15 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
 
     override fun onStart() {
         super.onStart()
-        if(!EventBus.getDefault().isRegistered(this)){
+        if (!EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().register(this)
         }
     }
 
     @Subscribe
     fun receiveLocationEvent(locationEvent: LocationEvent) {
-        updateMap(LatLng(locationEvent.latitude!!, locationEvent.longitude!!))
+        userLocation = LatLng(locationEvent.latitude!!, locationEvent.longitude!!)
+        updateMap(userLocation)
     }
 
     override fun onDestroy() {
@@ -172,4 +217,5 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
         stopService(service)
     }
 }
+
 

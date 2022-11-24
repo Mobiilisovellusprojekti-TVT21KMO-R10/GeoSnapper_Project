@@ -19,8 +19,8 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
 
-        val passedValue = intent.getStringExtra("login")
-        //val passedValue = "true"
+        //val passedValue = intent.getStringExtra("login")
+        val passedValue = "true"
 
         if (passedValue == null) {
             val intent = Intent(this, SignupActivity::class.java)
