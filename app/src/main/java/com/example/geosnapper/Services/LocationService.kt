@@ -9,7 +9,6 @@ import com.google.android.gms.location.*
 import org.greenrobot.eventbus.EventBus
 
 class LocationService : Service() {
-
     private var client: FusedLocationProviderClient? = null
     private var locationCallback: LocationCallback? = null
     private var locationRequest: LocationRequest? = null

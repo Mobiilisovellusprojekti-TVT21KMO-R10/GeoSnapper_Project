@@ -31,7 +31,7 @@ class LoginActivity : AppCompatActivity() {
             startActivity(intent);
         }
 
-        binding.btnSubmit.setOnClickListener{
+        binding.btnSubmit.setOnClickListener{0
 //            val email = binding.etEmail.text.toString()
 //            val password = binding.etPassword.text.toString()
             // iffin sisään tulee julkaisuversiossa if(email.isNotEmpty() && password.isNotEmpty())

@@ -1,12 +1,10 @@
 package com.example.geosnapper
 
 import android.Manifest
-import android.annotation.SuppressLint
-import android.content.Context
+import android.animation.ValueAnimator
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
-import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -15,6 +13,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.example.geosnapper.Events.LocationEvent
+import com.example.geosnapper.Marker.MarkerConstants
 import com.example.geosnapper.Marker.MarkerToPost
 import com.example.geosnapper.Post.Post
 import com.example.geosnapper.Post.PostsReader
@@ -25,12 +24,14 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
-import android.provider.Settings
+import javax.annotation.meta.When
+import kotlin.properties.Delegates
 
 class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
@@ -40,15 +41,17 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
     private lateinit var client: FusedLocationProviderClient
     private var setMapOnUserLocation = true
     private var selectedMarker: Marker? = null
-    private val PERMISSION_ID = 42
     private var locationPermission = false
     private var userLocation = LatLng(0.0, 0.0)
+    private lateinit var animator: ValueAnimator
+    private lateinit var userMarker: Marker
+    private var markersOnMap = ArrayList<Marker>()
 
     private val posts: List<Post> by lazy {         // TÄÄ ON VÄLIAIKAINEN RATKAISU TESTAILUA VARTEN
         PostsReader(this).read()
     }
 
-
+    // LOCATIONSERVICE VAATII TÄMMÖSET HIRVITYKSET
     private val backgroundLocation = registerForActivityResult(ActivityResultContracts.RequestPermission()) {
         if (it) {
         }
@@ -68,7 +71,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
         }
     }
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -77,6 +79,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
         setContentView(binding.root)
         service = Intent(this, LocationService::class.java)
         locationPermission = checkPermissions()
+        if (!locationPermission) requestPermissions()
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
@@ -99,26 +102,23 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
         map = googleMap
         map.uiSettings.isZoomControlsEnabled = true
         map.setOnMarkerClickListener(this)
-        updateMap(getLocation())
     }
 
-    private fun updateMap(currentLocation: LatLng?) {   // KAIPAA VIILAAMISTA, EI TOIMI HYVIN NÄIN
-        map.clear()
+    private fun updateMap(currentLocation: LatLng?) {
         if (currentLocation != null) {
             if (setMapOnUserLocation) {
-                map.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 12f))
                 setMapOnUserLocation = false
+                map.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 12f))
+                userMarker = map.addMarker(MarkerOptions().position(currentLocation).title("You"))!!
+                addMarkers()
             }
-            placeMarkerOnMap(currentLocation, "You")
-            addMarkers()
+            else {
+                userMarker?.position = currentLocation
+                markersOnMap.map {
+                    it.isVisible = calculateViewDistance(it.position, it.snippet as Int)
+                }
+            }
         }
-    }
-
-    // MARKKERIEN PIIRTOETÄISYYDEN TESTAILUA VERSIO 3
-    private fun calculateDistanceInMeters(post: LatLng): Float {
-        val results = FloatArray(1)
-        Location.distanceBetween(userLocation.latitude, userLocation.longitude, post.latitude, post.longitude, results)
-        return results[0]
     }
 
     private fun addMarkers() {      // TESTIVAIHEESSA
@@ -126,12 +126,52 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
         markers.forEach { marker ->
             val distance = calculateDistanceInMeters(marker.coordinates).toString()
             val post = posts.find {it.postId == marker.postId}
-            placeMarkerOnMap(marker.coordinates, post!!.message + ", Etäisyys käyttäjästä: " + distance + " m")
+            placeMarkerOnMap(
+                marker.coordinates,
+                post!!.message + ", Etäisyys käyttäjästä: " + distance + " m",  // TÄÄ ON TESTAILUA
+                marker.tier
+            )
         }
     }
 
-    private fun placeMarkerOnMap(coordinates: LatLng, title: String) {
-        map.addMarker(MarkerOptions().position(coordinates).title(title))
+    private fun placeMarkerOnMap(coordinates: LatLng, title: String, tier: Int = 0) {
+        // TÄN VOIS SIIRTÄÄ MARKER LUOKKAAN TAI OMAAN FUNKTIOON
+        val icon =  when (tier) {
+            1 -> BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)
+            2 -> BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)
+            3 -> BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN)
+            else -> BitmapDescriptorFactory.defaultMarker()
+        }
+        val marker = map.addMarker(MarkerOptions()
+            .position(coordinates)
+            .title(title).icon(icon)
+            .snippet(tier.toString())
+            .visible(calculateViewDistance(coordinates, tier))
+        )
+        markersOnMap.add(marker!!)
+    }
+
+    // MARKKERIEN PIIRTOETÄISYYDEN LASKUN TESTAILUA VERSIO 3
+    private fun calculateDistanceInMeters(post: LatLng): Float {
+        val results = FloatArray(1)
+        Location.distanceBetween(
+            userLocation.latitude,
+            userLocation.longitude,
+            post.latitude,
+            post.longitude,
+            results
+        )
+        return results[0]
+    }
+
+    private fun calculateViewDistance(post: LatLng, tier: Int): Boolean {
+        val results = calculateDistanceInMeters(post)
+        val viewDistance = when (tier) {
+            1 -> MarkerConstants.TIER1_VIEWDISTANCE
+            2 -> MarkerConstants.TIER2_VIEWDISTANCE
+            else -> MarkerConstants.TIER3_VIEWDISTANCE
+        }
+        return results < viewDistance
     }
 
     // TÄÄ ON TULEVAA MARKKERIEN / POSTIEN AVAAMISTA VARTEN. VOI OLLA TURHAKIN
@@ -145,58 +185,17 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
                 startService(service)
                 return true
         }
-        requestPermissions()
         return false
     }
 
     private fun requestPermissions() {
         Toast.makeText(this, "Please allow the app to use location data", Toast.LENGTH_LONG).show()
         locationPermissions.launch(
-            arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION)
+            arrayOf(
+                android.Manifest.permission.ACCESS_FINE_LOCATION,
+                android.Manifest.permission.ACCESS_COARSE_LOCATION
+            )
         )
-    }
-
-    // TÄMÄ EI JOSTAIN SYYSTÄ TOIMI KUN KÄYTTÄÄ SERVICE-LUOKAN VAATIMAAN LUPIEN HAKUSYNTAKSIA. EN YMMÄRRÄ MIKSI
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == PERMISSION_ID) {
-            if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                startService(service)
-                locationPermission = true
-            }
-        }
-    }
-
-    private fun isLocationEnabled(): Boolean {
-        val locationManager: LocationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(
-            LocationManager.NETWORK_PROVIDER
-        )
-    }
-
-    @SuppressLint("MissingPermission")
-    private fun getLocation(): LatLng? {
-        var currentLocation: LatLng? = null
-        if (checkPermissions()) {
-            if (isLocationEnabled()) {
-                client.lastLocation.addOnCompleteListener(this) { task ->
-                    val location: Location? = task.result
-                    if (location == null) {
-                        Toast.makeText(this, "failed to get location", Toast.LENGTH_LONG).show()
-                    }
-                    else {
-                        currentLocation = LatLng(location.latitude, location.longitude)
-                        userLocation = currentLocation as LatLng
-                    }
-                }
-            }
-            else {
-                Toast.makeText(this, "Turn on location", Toast.LENGTH_LONG).show()
-                val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-                startActivity(intent)
-            }
-        }
-        return currentLocation
     }
 
     override fun onStart() {
@@ -217,5 +216,4 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
         stopService(service)
     }
 }
-
 
