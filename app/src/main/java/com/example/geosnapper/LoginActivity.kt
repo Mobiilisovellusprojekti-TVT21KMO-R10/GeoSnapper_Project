@@ -1,17 +1,23 @@
 package com.example.geosnapper
 
+import android.content.ContentValues
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.TextView
 import android.widget.Toast
 import com.example.geosnapper.databinding.ActivityLoginBinding
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
+import com.google.gson.Gson
 
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityLoginBinding
     private lateinit var firebaseAuth: FirebaseAuth
+    private lateinit var uid: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,9 +46,15 @@ class LoginActivity : AppCompatActivity() {
             if (temporaryCondition){
                     firebaseAuth.signInWithEmailAndPassword("teronsahkoposti@gmail.com", "tero1234").addOnCompleteListener {
                         if (it.isSuccessful){
+
+                            val user = firebaseAuth.currentUser
+                            user?.let {
+                                uid = user.uid
+                            }
+
                             Log.d("Login Activity", "Login oli muuten succesful")
                             val intent = Intent(this, MainActivity::class.java)
-                            intent.putExtra("login", "true")
+                            intent.putExtra("userId", uid)
                             startActivity(intent);
                         }
                         else{
