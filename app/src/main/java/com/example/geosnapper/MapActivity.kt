@@ -7,14 +7,11 @@ import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Build
 import android.os.Bundle
-<<<<<<< HEAD
 import android.util.Log
-=======
 import android.os.Looper
 import android.provider.Settings
 import android.view.GestureDetector
 import android.view.MotionEvent
->>>>>>> b1ccc43db3941a469229de28aba70c6a14182aa5
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -37,18 +34,13 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
-<<<<<<< HEAD
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import javax.annotation.meta.When
 import kotlin.properties.Delegates
-=======
 import com.google.android.gms.tasks.Tasks.await
 import com.google.firebase.auth.FirebaseAuth
-import org.greenrobot.eventbus.EventBus
-import org.greenrobot.eventbus.Subscribe
 import java.lang.Math.abs
->>>>>>> b1ccc43db3941a469229de28aba70c6a14182aa5
 
 class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 

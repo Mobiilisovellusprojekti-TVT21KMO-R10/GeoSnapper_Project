@@ -1,3 +1,4 @@
+
 package com.example.geosnapper
 
 import androidx.appcompat.app.AppCompatActivity
@@ -22,20 +23,13 @@ class MainActivity : AppCompatActivity() {
         //tässä muuttujassa on käyttäjän ID.
         val passedValue = intent.getStringExtra("userId")
 
-<<<<<<< HEAD
-        //val passedValue = intent.getStringExtra("login")
-        val passedValue = "true"
-
-        if (passedValue == null) {
-=======
         if (passedValue == null || passedValue == "null") {
->>>>>>> b1ccc43db3941a469229de28aba70c6a14182aa5
             val intent = Intent(this, SignupActivity::class.java)
             startActivity(intent);
         } else if (passedValue != null) {
             val intent = Intent(this, MapActivity::class.java)
             intent.putExtra("userId", passedValue)
             startActivity(intent);
-            }
+        }
     }
 }
