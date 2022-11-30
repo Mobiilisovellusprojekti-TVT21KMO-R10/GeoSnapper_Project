@@ -20,6 +20,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+
         //tässä muuttujassa on käyttäjän ID.
         val passedValue = intent.getStringExtra("userId")
 
@@ -31,5 +32,7 @@ class MainActivity : AppCompatActivity() {
             intent.putExtra("userId", passedValue)
             startActivity(intent);
         }
+
+
     }
 }

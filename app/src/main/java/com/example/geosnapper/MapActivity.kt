@@ -7,17 +7,10 @@ import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
-import android.os.Looper
-import android.provider.Settings
-import android.view.GestureDetector
-import android.view.MotionEvent
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.core.view.GestureDetectorCompat
-import androidx.core.view.MotionEventCompat
 import com.example.geosnapper.Events.LocationEvent
 import com.example.geosnapper.Marker.MarkerConstants
 import com.example.geosnapper.Marker.MarkerToPost
@@ -50,7 +43,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
     private lateinit var client: FusedLocationProviderClient
     private lateinit var firebaseAuth: FirebaseAuth
     private var setMapOnUserLocation = true
-    private var selectedMarker: Marker? = null
+    private lateinit var  selectedMarker: Marker
     private var locationPermission = false
     private var userLocation = LatLng(0.0, 0.0)
     private lateinit var animator: ValueAnimator
@@ -63,8 +56,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
 
     // LOCATIONSERVICE VAATII TÄMMÖSET HIRVITYKSET
     private val backgroundLocation = registerForActivityResult(ActivityResultContracts.RequestPermission()) {
-        if (it) {
-        }
     }
     private val locationPermissions = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
         when {
@@ -133,9 +124,9 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
                 addMarkers()
             }
             else {
-                userMarker?.position = currentLocation
+                userMarker.position = currentLocation
                 markersOnMap.map {
-                    it.isVisible = calculateViewDistance(it.position, it.snippet as Int)
+                    it.isVisible = calculateViewDistance(it.position, it.snippet?.toInt())
                 }
             }
         }
@@ -164,7 +155,8 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
         }
         val marker = map.addMarker(MarkerOptions()
             .position(coordinates)
-            .title(title).icon(icon)
+            .title(title)
+            .icon(icon)
             .snippet(tier.toString())
             .visible(calculateViewDistance(coordinates, tier))
         )
@@ -184,7 +176,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
         return results[0]
     }
 
-    private fun calculateViewDistance(post: LatLng, tier: Int): Boolean {
+    private fun calculateViewDistance(post: LatLng, tier: Int?): Boolean {
         val results = calculateDistanceInMeters(post)
         val viewDistance = when (tier) {
             1 -> MarkerConstants.TIER1_VIEWDISTANCE
@@ -235,6 +227,5 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
         super.onDestroy()
         stopService(service)
     }
-
 }
 
