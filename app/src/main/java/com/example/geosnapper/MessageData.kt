@@ -8,6 +8,6 @@ data class MessageData(val message: String,
                        val created: Timestamp,
                        val geoData: LatLng,
                        val tier: Int,
-                       val uid: String)
+                       val uid: String?)
 
 

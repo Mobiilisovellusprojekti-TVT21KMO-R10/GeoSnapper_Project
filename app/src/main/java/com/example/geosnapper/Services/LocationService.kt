@@ -9,7 +9,6 @@ import com.google.android.gms.location.*
 import org.greenrobot.eventbus.EventBus
 
 class LocationService : Service() {
-
     private var client: FusedLocationProviderClient? = null
     private var locationCallback: LocationCallback? = null
     private var locationRequest: LocationRequest? = null
@@ -19,7 +18,7 @@ class LocationService : Service() {
         super.onCreate()
         client = LocationServices.getFusedLocationProviderClient(this)
         locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 10000)
-            .setIntervalMillis(500)
+            .setIntervalMillis(5000)
             .build()
         locationCallback = object: LocationCallback(){
             override fun onLocationAvailability(p0: LocationAvailability) {
