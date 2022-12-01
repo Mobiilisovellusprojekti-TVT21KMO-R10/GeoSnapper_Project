@@ -1,17 +1,23 @@
 package com.example.geosnapper
 
-import android.app.Activity
 import android.content.Context
+import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
+import androidx.core.content.edit
 
-open class AppPreferences (context: Context) {
+open class LocalStorage {
+    // TALLENNETTAVA TIEDOSTO
+    // TALLENNETTAVA TIEDOSTO
     private val USER_DATA = "USER_DATA"
-
+    // TALLENNETTAVAT TIEDOT
     private val USER_EMAIL = "USER_EMAIL"
     private val USER_PASSWORD = "PASSWORD"
     private val VIEW_DISTANCE = "VIEW_DISTANCE"
 
-    private var userPrefs = context.getSharedPreferences(USER_DATA, Activity.MODE_PRIVATE)
+    private var userPrefs : SharedPreferences? = null
+    fun setup(context: Context) {
+        userPrefs  = context.getSharedPreferences(USER_DATA, MODE_PRIVATE)
+    }
 
     private inline fun SharedPreferences.editMe(operation: (SharedPreferences.Editor) -> Unit) {
         val editMe = edit()
@@ -36,15 +42,15 @@ open class AppPreferences (context: Context) {
         }
 
     private var SharedPreferences.viewDistance
-        get() = getInt(VIEW_DISTANCE, 5000)
+        get() = getInt(VIEW_DISTANCE, 0)
         set(value) {
             editMe {
                 it.putInt(VIEW_DISTANCE, value)
             }
         }
 
-    private var SharedPreferences.clearValues
-        get() = {  }
+    private var SharedPreferences.initialize
+        get() = null
         set(value) {
             editMe {
                 it.remove(USER_EMAIL)
@@ -54,28 +60,27 @@ open class AppPreferences (context: Context) {
         }
 
     fun saveLoginData(email: String, password: String) {
-        userPrefs.email = email
-        userPrefs.password = password
+        userPrefs?.email = email
+        userPrefs?.password = password
     }
 
     fun setViewDistance(distance: Int) {
-        userPrefs.viewDistance = distance
+        userPrefs?.viewDistance = distance
     }
 
-    fun logOut(distance: Int) {
-        userPrefs.clearValues = {}
+    fun initialize() {
+        userPrefs?.initialize
     }
 
     fun getEmail(): String {
-        return userPrefs.email.toString()
+        return userPrefs?.email.toString()
     }
 
     fun getPassword(): String {
-        return userPrefs.password.toString()
+        return userPrefs?.password.toString()
     }
 
-    fun getViewDistance(): Int {
-        return userPrefs.viewDistance
+    fun getViewDistance(): Int? {
+        return userPrefs?.viewDistance
     }
-
 }

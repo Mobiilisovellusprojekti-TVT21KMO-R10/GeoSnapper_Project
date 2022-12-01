@@ -14,12 +14,13 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
+        LocalStorage().setup(applicationContext)
 
         //tässä muuttujassa on käyttäjän ID.
         val passedValue = intent.getStringExtra("userId")
@@ -32,7 +33,6 @@ class MainActivity : AppCompatActivity() {
             intent.putExtra("userId", passedValue)
             startActivity(intent);
         }
-
 
     }
 }

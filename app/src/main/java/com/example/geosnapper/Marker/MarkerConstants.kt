@@ -1,6 +1,9 @@
 package com.example.geosnapper.Marker
 
-public class MarkerConstants {     // NIIN KUIN NÄKYY NÄÄ ON VAAN HAHMOTTELUVAIHEESSA
+import android.content.Context
+import com.example.geosnapper.LocalStorage
+
+public class MarkerConstants (context: Context) {     // NIIN KUIN NÄKYY NÄÄ ON VAAN HAHMOTTELUVAIHEESSA
     companion object {
         val TIER1_LIFETIME = 1
         val TIER2_LIFETIME = 1
@@ -10,12 +13,12 @@ public class MarkerConstants {     // NIIN KUIN NÄKYY NÄÄ ON VAAN HAHMOTTELUV
         val TIER3_VIEWDISTANCE = getMarkerViewDistanceFromMemory()
         val MARKER_OPENDISTANCE = 1
 
+        // HAETAAN ETÄISYYSARVO PUHELIMEN MUISTISTA JOS MUISTIIN ON ASETETTU ARVO, MUUTEN VAKIO 5000
         private fun getMarkerViewDistanceFromMemory(): Int {
-            if ("coder" == "sober") {
-                // HAETAAN ETÄISYYSARVO PUHELIMEN MUISTISTA JOS MUISTIIN ON ASETETTU ARVO
-                return 1
+            LocalStorage().getViewDistance()?.let { distance ->
+                return distance
             }
-            else return 5000
+            return 5000
         }
     }
 }

@@ -29,11 +29,7 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
-import javax.annotation.meta.When
-import kotlin.properties.Delegates
-import com.google.android.gms.tasks.Tasks.await
 import com.google.firebase.auth.FirebaseAuth
-import java.lang.Math.abs
 
 class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
@@ -102,6 +98,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
             val intent = Intent(this, MainActivity::class.java)
             intent.putExtra("userId", "null")
             firebaseAuth.signOut()
+            LocalStorage().initialize()   // PYYHITÄÄN LAITTEESEEN TALLENNETUT TIEDOT
             startActivity(intent)
         }
     }
@@ -135,11 +132,11 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
     private fun addMarkers() {      // TESTIVAIHEESSA
         val markers = MarkerToPost().listHandler(posts)
         markers.forEach { marker ->
-            val distance = calculateDistanceInMeters(marker.coordinates).toString()
+            val distance = calculateDistanceInMeters(marker.coordinates).toString()     // TÄÄ ON TESTAILUA
             val post = posts.find {it.postId == marker.postId}
             placeMarkerOnMap(
                 marker.coordinates,
-                post!!.message + ", Etäisyys käyttäjästä: " + distance + " m",  // TÄÄ ON TESTAILUA
+                post!!.message + ", Etäisyys käyttäjästä: " + distance + " m",
                 marker.tier
             )
         }

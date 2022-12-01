@@ -1,18 +1,12 @@
 package com.example.geosnapper
 
-import android.content.ContentValues
-import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.widget.TextView
 import android.widget.Toast
 import com.example.geosnapper.databinding.ActivityLoginBinding
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
-import com.google.gson.Gson
 
 class LoginActivity : AppCompatActivity() {
 
@@ -20,12 +14,10 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var uid: String
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val preferences = AppPreferences(this)
-        checkPreferences(preferences)
+        checkPreferences()
 
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -36,6 +28,7 @@ class LoginActivity : AppCompatActivity() {
             binding.etEmail.setText("")
             binding.etPassword.setText("")
         }
+
 
         binding.textView.setOnClickListener{
             val intent = Intent(this, SignupActivity::class.java)
@@ -51,7 +44,6 @@ class LoginActivity : AppCompatActivity() {
             if (temporaryCondition){
                     firebaseAuth.signInWithEmailAndPassword("teronsahkoposti@gmail.com", "tero1234").addOnCompleteListener {
                         if (it.isSuccessful){
-
                             val user = firebaseAuth.currentUser
                             user?.let {
                                 uid = user.uid
@@ -62,7 +54,7 @@ class LoginActivity : AppCompatActivity() {
                             // MÄÄ RÄPELSIN TÄTÄ SEN VERRAN, ETTÄ TALLENNETAAN TÄSSÄ KÄYTTÄJÄTIEDOT
                             // APP AUKAISTAAN FUNKTIOSSA
                             // TARTTIS VIELÄ MIETTIÄ, ETTÄ MITEN VARMISTETAAN TALLENNETUT KÄYTTÄJÄTIEDOT
-                            preferences.saveLoginData(email, password)
+                            LocalStorage().saveLoginData(email, password)
                             openApp(uid)
 
                         }
@@ -82,11 +74,14 @@ class LoginActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-    // TÄÄ ON HAHMOTTELUVAIHEESSA
-    private fun checkPreferences(preferences: AppPreferences) {
-        if (preferences.getEmail() != "" && preferences.getPassword() != "") {
-            /*
-            firebaseAuth.signInWithEmailAndPassword("teronsahkoposti@gmail.com", "tero1234").addOnCompleteListener {
+    // TÄÄ ON HAHMOTTELUVAIHEESSA PITÄIS KEKSIÄ TOIMIVA NULLCHECK
+    private fun checkPreferences() {
+        /*
+        val email = checkNotNull(LocalStorage().getEmail())
+        val password = checkNotNull(LocalStorage().getPassword())
+
+
+            firebaseAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener {
                 if (it.isSuccessful) {
                     val user = firebaseAuth.currentUser
                     user?.let {
@@ -96,7 +91,6 @@ class LoginActivity : AppCompatActivity() {
                 }
             }
         */
-            openApp(preferences.getEmail())
-        }
     }
+
 }
