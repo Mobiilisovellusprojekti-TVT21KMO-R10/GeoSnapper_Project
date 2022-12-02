@@ -4,20 +4,17 @@ import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import androidx.core.content.edit
+import org.checkerframework.checker.initialization.qual.Initialized
 
-open class LocalStorage {
+object LocalStorage {
     // TALLENNETTAVA TIEDOSTO
-    // TALLENNETTAVA TIEDOSTO
-    private val USER_DATA = "USER_DATA"
+    private val USER_DATA = "USER_DATAAA"
     // TALLENNETTAVAT TIEDOT
     private val USER_EMAIL = "USER_EMAIL"
     private val USER_PASSWORD = "PASSWORD"
     private val VIEW_DISTANCE = "VIEW_DISTANCE"
 
     private var userPrefs : SharedPreferences? = null
-    fun setup(context: Context) {
-        userPrefs  = context.getSharedPreferences(USER_DATA, MODE_PRIVATE)
-    }
 
     private inline fun SharedPreferences.editMe(operation: (SharedPreferences.Editor) -> Unit) {
         val editMe = edit()
@@ -26,7 +23,7 @@ open class LocalStorage {
     }
 
     private var SharedPreferences.email
-        get() = getString(USER_EMAIL, "")
+        get() = getString(USER_EMAIL, "Pekka")
         set(value) {
             editMe {
                 it.putString(USER_EMAIL, value)
@@ -34,7 +31,7 @@ open class LocalStorage {
         }
 
     private var SharedPreferences.password
-        get() = getString(USER_PASSWORD, "")
+        get() = getString(USER_PASSWORD, "Sauri")
         set(value) {
             editMe {
                 it.putString(USER_PASSWORD, value)
@@ -50,7 +47,7 @@ open class LocalStorage {
         }
 
     private var SharedPreferences.initialize
-        get() = null
+        get() = true
         set(value) {
             editMe {
                 it.remove(USER_EMAIL)
@@ -58,6 +55,10 @@ open class LocalStorage {
                 it.remove(VIEW_DISTANCE)
             }
         }
+
+    fun setup(context: Context) {
+        userPrefs  = context.getSharedPreferences(USER_DATA, MODE_PRIVATE)
+    }
 
     fun saveLoginData(email: String, password: String) {
         userPrefs?.email = email
@@ -69,7 +70,7 @@ open class LocalStorage {
     }
 
     fun initialize() {
-        userPrefs?.initialize
+        userPrefs?.initialize = true
     }
 
     fun getEmail(): String {
@@ -80,7 +81,7 @@ open class LocalStorage {
         return userPrefs?.password.toString()
     }
 
-    fun getViewDistance(): Int? {
-        return userPrefs?.viewDistance
+    fun getViewDistance(): Int {
+        return userPrefs!!.viewDistance
     }
 }

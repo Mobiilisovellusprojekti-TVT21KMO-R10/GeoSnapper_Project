@@ -20,7 +20,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        LocalStorage().setup(applicationContext)
+        LocalStorage.setup(applicationContext)
 
         //tässä muuttujassa on käyttäjän ID.
         val passedValue = intent.getStringExtra("userId")

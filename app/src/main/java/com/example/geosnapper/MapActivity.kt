@@ -98,7 +98,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
             val intent = Intent(this, MainActivity::class.java)
             intent.putExtra("userId", "null")
             firebaseAuth.signOut()
-            LocalStorage().initialize()   // PYYHITÄÄN LAITTEESEEN TALLENNETUT TIEDOT
+            LocalStorage.initialize()   // PYYHITÄÄN LAITTEESEEN TALLENNETUT TIEDOT
             startActivity(intent)
         }
     }

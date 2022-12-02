@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import com.example.geosnapper.Marker.MarkerConstants
 import com.example.geosnapper.databinding.ActivityLoginBinding
 import com.google.firebase.auth.FirebaseAuth
 
@@ -17,18 +18,16 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        checkPreferences()
+        // TÄSSÄ CHEKATAAN ONKO TALLENNETTUJA KIRJAUTUMISTIETOJA JA JOS ON NIIN KIRJAUTUU NIILLÄ
+        ifSavedLogInData()
 
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        firebaseAuth = FirebaseAuth.getInstance()
-
         binding.btnReset.setOnClickListener{
-            binding.etEmail.setText("")
+            binding.etEmail.setText(MarkerConstants.TIER3_VIEWDISTANCE.toString())
             binding.etPassword.setText("")
         }
-
 
         binding.textView.setOnClickListener{
             val intent = Intent(this, SignupActivity::class.java)
@@ -38,34 +37,39 @@ class LoginActivity : AppCompatActivity() {
         binding.btnSubmit.setOnClickListener{
             val email = binding.etEmail.text.toString()
             val password = binding.etPassword.text.toString()
+
             // iffin sisään tulee julkaisuversiossa if(email.isNotEmpty() && password.isNotEmpty())
             val temporaryCondition = true
-
             if (temporaryCondition){
-                    firebaseAuth.signInWithEmailAndPassword("teronsahkoposti@gmail.com", "tero1234").addOnCompleteListener {
-                        if (it.isSuccessful){
-                            val user = firebaseAuth.currentUser
-                            user?.let {
-                                uid = user.uid
-                            }
-                            Log.d("Login Activity", "Login oli muuten succesful")
-
-
-                            // MÄÄ RÄPELSIN TÄTÄ SEN VERRAN, ETTÄ TALLENNETAAN TÄSSÄ KÄYTTÄJÄTIEDOT
-                            // APP AUKAISTAAN FUNKTIOSSA
-                            // TARTTIS VIELÄ MIETTIÄ, ETTÄ MITEN VARMISTETAAN TALLENNETUT KÄYTTÄJÄTIEDOT
-                            LocalStorage().saveLoginData(email, password)
-                            openApp(uid)
-
-                        }
-                        else{
-                            Toast.makeText(this, it.exception.toString(), Toast.LENGTH_SHORT).show()
-                        }
-                    }
-            } else{
+                firebaseLogIn("teronsahkoposti@gmail.com", "tero1234")
+            }
+            else {
                 Toast.makeText(this, "Empty fields are not allowed.", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+    // MÄÄ VÄHÄN RÄPELSIN TÄTÄ
+    // KIRJAUTUESSA TALLENNETAAN KÄYTTÄJÖTIEDOT
+    // KIRJAUDUTAAN KÄYTTÖJÄTIEDOILLA
+    // KIRJAUTUMINEN JA APP-AUKAISU FUNKTIOSSA
+
+    private fun firebaseLogIn(email: String, password: String) {
+        firebaseAuth.signInWithEmailAndPassword(email,password)
+            .addOnCompleteListener {
+                if (it.isSuccessful) {
+                    val user = firebaseAuth.currentUser
+                    user?.let {
+                        uid = user.uid
+                    }
+                    Log.d("Login Activity", "Login oli muuten succesful")
+                    LocalStorage.saveLoginData(email, password)
+                    openApp(uid)
+                }
+                else {
+                    Toast.makeText(this, it.exception.toString(), Toast.LENGTH_SHORT).show()
+                }
+            }
     }
 
     private fun openApp(uid: String) {
@@ -75,22 +79,13 @@ class LoginActivity : AppCompatActivity() {
     }
 
     // TÄÄ ON HAHMOTTELUVAIHEESSA PITÄIS KEKSIÄ TOIMIVA NULLCHECK
-    private fun checkPreferences() {
-        /*
-        val email = checkNotNull(LocalStorage().getEmail())
-        val password = checkNotNull(LocalStorage().getPassword())
-
-
-            firebaseAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener {
-                if (it.isSuccessful) {
-                    val user = firebaseAuth.currentUser
-                    user?.let {
-                        uid = user.uid
-                    }
-                    openApp(uid)
-                }
-            }
-        */
+    private fun ifSavedLogInData() {
+        val email = LocalStorage.getEmail()
+        val password = LocalStorage.getPassword()
+        if (email != "Pekka" && password != "Sauri") {      // HASSUTTELUA, KORJATTAVA JOTKU CLEAN CODE ARVOT
+            //openApp("Peksi")                              // OLISI MYÖS MAHDOLLISTA TALLENTAA UID JA KIRJATA SEN KANS SUORAAN SISÄÄN. EI TOSIN OO TURVALLISIN RATKAISU
+            firebaseLogIn(email, password)
+        }
     }
 
 }
