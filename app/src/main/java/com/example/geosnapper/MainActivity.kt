@@ -33,6 +33,5 @@ class MainActivity : AppCompatActivity() {
             intent.putExtra("userId", passedValue)
             startActivity(intent);
         }
-
     }
 }

@@ -3,11 +3,13 @@ package com.example.geosnapper
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Base64
 import android.util.Log
 import android.widget.Toast
-import com.example.geosnapper.Marker.MarkerConstants
 import com.example.geosnapper.databinding.ActivityLoginBinding
 import com.google.firebase.auth.FirebaseAuth
+import java.math.BigInteger
+import java.security.MessageDigest
 
 class LoginActivity : AppCompatActivity() {
 
@@ -25,7 +27,7 @@ class LoginActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.btnReset.setOnClickListener{
-            binding.etEmail.setText(MarkerConstants.TIER3_VIEWDISTANCE.toString())
+            binding.etEmail.setText("")
             binding.etPassword.setText("")
         }
 
@@ -36,7 +38,7 @@ class LoginActivity : AppCompatActivity() {
 
         binding.btnSubmit.setOnClickListener{
             val email = binding.etEmail.text.toString()
-            val password = binding.etPassword.text.toString()
+            val password = hasher(binding.etPassword.text.toString())
 
             // iffin sisään tulee julkaisuversiossa if(email.isNotEmpty() && password.isNotEmpty())
             val temporaryCondition = true
@@ -53,9 +55,11 @@ class LoginActivity : AppCompatActivity() {
     // KIRJAUTUESSA TALLENNETAAN KÄYTTÄJÖTIEDOT
     // KIRJAUDUTAAN KÄYTTÖJÄTIEDOILLA
     // KIRJAUTUMINEN JA APP-AUKAISU FUNKTIOSSA
+    // SALASANAN HASHAUS
 
     private fun firebaseLogIn(email: String, password: String) {
-        firebaseAuth.signInWithEmailAndPassword(email,password)
+        firebaseAuth = FirebaseAuth.getInstance()
+        firebaseAuth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener {
                 if (it.isSuccessful) {
                     val user = firebaseAuth.currentUser
@@ -78,7 +82,6 @@ class LoginActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-    // TÄÄ ON HAHMOTTELUVAIHEESSA PITÄIS KEKSIÄ TOIMIVA NULLCHECK
     private fun ifSavedLogInData() {
         val email = LocalStorage.getEmail()
         val password = LocalStorage.getPassword()
@@ -88,4 +91,9 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
+    fun hasher(password: String): String {
+        val md = MessageDigest.getInstance("MD5")
+        val base16Hash = BigInteger(1, md.digest(password.toByteArray())).toString(16).padStart(32, '0')
+        return Base64.encodeToString(base16Hash.toByteArray(), 16).trim()
+    }
 }
