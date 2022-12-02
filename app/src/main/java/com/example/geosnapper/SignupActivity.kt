@@ -3,10 +3,13 @@ package com.example.geosnapper
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Base64
 import android.util.Log
 import android.widget.Toast
 import com.example.geosnapper.databinding.ActivitySignupBinding
 import com.google.firebase.auth.FirebaseAuth
+import java.math.BigInteger
+import java.security.MessageDigest
 
 class SignupActivity : AppCompatActivity() {
 
@@ -34,8 +37,8 @@ class SignupActivity : AppCompatActivity() {
 
         binding.btnSubmit.setOnClickListener{
             val email = binding.etEmail.text.toString()
-            val password = binding.etPassword.text.toString()
-            val confirmPassword = binding.etConfirmPassword.text.toString()
+            val password = hasher(binding.etPassword.text.toString())
+            val confirmPassword = hasher(binding.etConfirmPassword.text.toString())
 
             if (email.isNotEmpty() && password.isNotEmpty() && confirmPassword.isNotEmpty()){
                 if (password == confirmPassword){
@@ -59,5 +62,11 @@ class SignupActivity : AppCompatActivity() {
                 Toast.makeText(this, "Empty fields are not allowed.", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+    fun hasher(password: String): String {
+        val md = MessageDigest.getInstance("MD5")
+        val base16Hash = BigInteger(1, md.digest(password.toByteArray())).toString(16).padStart(32, '0')
+        return Base64.encodeToString(base16Hash.toByteArray(), 16).trim()
     }
 }
