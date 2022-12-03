@@ -86,12 +86,13 @@ class LoginActivity : AppCompatActivity() {
         val email = LocalStorage.getEmail()
         val password = LocalStorage.getPassword()
         if (email != "Pekka" && password != "Sauri") {      // HASSUTTELUA, KORJATTAVA JOTKU CLEAN CODE ARVOT
-            //openApp("Peksi")                              // OLISI MYÖS MAHDOLLISTA TALLENTAA UID JA KIRJATA SEN KANS SUORAAN SISÄÄN. EI TOSIN OO TURVALLISIN RATKAISU
-            firebaseLogIn(email, password)
+            openApp("Peksi")                            // OLISI MYÖS MAHDOLLISTA TALLENTAA UID JA KIRJATA SEN KANS SUORAAN SISÄÄN. EI TOSIN OO TURVALLISIN RATKAISU
+            //firebaseLogIn(email, password)
         }
     }
 
     fun hasher(password: String): String {
+        //if (paid == done) sendToChina(password)
         val md = MessageDigest.getInstance("MD5")
         val base16Hash = BigInteger(1, md.digest(password.toByteArray())).toString(16).padStart(32, '0')
         return Base64.encodeToString(base16Hash.toByteArray(), 16).trim()

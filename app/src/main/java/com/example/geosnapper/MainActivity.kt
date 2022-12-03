@@ -26,7 +26,7 @@ class MainActivity : AppCompatActivity() {
         val passedValue = intent.getStringExtra("userId")
 
         if (passedValue == null || passedValue == "null") {
-            val intent = Intent(this, SignupActivity::class.java)
+            val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent);
         } else if (passedValue != null) {
             val intent = Intent(this, MapActivity::class.java)

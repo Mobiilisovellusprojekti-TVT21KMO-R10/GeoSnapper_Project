@@ -3,16 +3,14 @@ package com.example.geosnapper
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
-import androidx.core.content.edit
-import org.checkerframework.checker.initialization.qual.Initialized
 
 object LocalStorage {
     // TALLENNETTAVA TIEDOSTO
-    private val USER_DATA = "USER_DATAAA"
+    private const val USER_DATA = "USER_DATA"
     // TALLENNETTAVAT TIEDOT
-    private val USER_EMAIL = "USER_EMAIL"
-    private val USER_PASSWORD = "PASSWORD"
-    private val VIEW_DISTANCE = "VIEW_DISTANCE"
+    private const val USER_EMAIL = "USER_EMAIL"
+    private const val USER_PASSWORD = "PASSWORD"
+    private const val VIEW_DISTANCE = "VIEW_DISTANCE"
 
     private var userPrefs : SharedPreferences? = null
 
