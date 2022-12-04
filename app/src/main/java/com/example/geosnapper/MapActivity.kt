@@ -114,6 +114,8 @@ class MapActivity : AppCompatActivity(),
         }
     }
 
+
+    // KARTAN PÄIVITYSTÄ
     @SuppressLint("PotentialBehaviorOverride")
     override fun onMapReady(googleMap: GoogleMap) {
 
@@ -124,6 +126,7 @@ class MapActivity : AppCompatActivity(),
         map.setOnMarkerClickListener(this)
         map.setOnInfoWindowClickListener(this)
         map.setOnInfoWindowLongClickListener(this)
+        //map.setInfoWindowAdapter(CustomInfoWindowAdapter())
     }
 
     private fun updateMap(currentLocation: LatLng?) {
@@ -138,12 +141,15 @@ class MapActivity : AppCompatActivity(),
             else {
                 userMarker.position = currentLocation
                 markersOnMap.map {
-                    it.isVisible = calculateViewDistance(it.position, it.snippet!!.toInt())
+                    it.isVisible = checkViewDistance(it.position, it.snippet!!.toInt())     // MUISTA PÄIVITTÄÄ TÄÄ
                 }
             }
         }
     }
 
+
+
+    // MARKKERIJUTTUJA
     private fun addMarkers() {
         val markers = PostToMarker().listHandler(posts)
         markers.forEach { marker ->
@@ -161,25 +167,25 @@ class MapActivity : AppCompatActivity(),
             .title(post.message + ", Etäisyys käyttäjästä: " + distance + " m")       // TESTAILUA
             .icon(marker.icon)
             .snippet(marker.tier.toString())
-            .visible(calculateViewDistance(marker.coordinates, marker.tier))
+            .visible(checkViewDistance(marker.coordinates, marker.tier))
         )
-        markerBuilder!!.tag = post.postId
+        markerBuilder!!.tag = post
         markersOnMap.add(markerBuilder)
     }
 
-    private fun calculateDistanceInMeters(post: LatLng): Float {
+    private fun calculateDistanceInMeters(coordinates: LatLng): Float {
         val results = FloatArray(1)
         Location.distanceBetween(
             userLocation.latitude,
             userLocation.longitude,
-            post.latitude,
-            post.longitude,
+            coordinates.latitude,
+            coordinates.longitude,
             results
         )
         return results[0]
     }
 
-    private fun calculateViewDistance(post: LatLng, tier: Int): Boolean {
+    private fun checkViewDistance(post: LatLng, tier: Int): Boolean {
         val results = calculateDistanceInMeters(post)
         val viewDistance = when (tier) {
             1 -> MarkerConstants.TIER1_VIEWDISTANCE
@@ -189,24 +195,29 @@ class MapActivity : AppCompatActivity(),
         return results < viewDistance
     }
 
-    // TÄÄ ON TULEVAA MARKKERIEN / POSTIEN AVAAMISTA VARTEN. VOI OLLA TURHAKIN
+    private fun checkOpenDistance(marker: Marker): Boolean {
+        val distance = calculateDistanceInMeters(marker.position)
+        val result = when (marker.snippet) {
+            "1" -> true
+            "2" -> true
+            else -> distance < MarkerConstants.TIER3_OPENDISTANCE
+        }
+        return result
+    }
+    // OLI GOOGLEN ESIMERKEISSÄ TOMMONEN HAUSKA POMPPUANIMAATIO JA VÄRINVAIHTO NIIN LAITOIN NE TOHON USER MARKKERIIN
     override fun onMarkerClick(marker : Marker): Boolean {
         selectedMarker = marker
-        // OLI GOOGLEN ESIMERKEISSÄ TOMMONEN HAUSKA POMPPUANIMAATIO JA VÄRINVAIHTO NIIN LAITOIN NE TOHON USER MARKKERIIN
         if (marker.tag == "user") {
             val handler = Handler()
             val start = SystemClock.uptimeMillis()
             val duration = 1500
-
             val interpolator = BounceInterpolator()
-
             handler.post(object : Runnable {
                 override fun run() {
                     val elapsed = SystemClock.uptimeMillis() - start
                     val t = Math.max(
                         1 - interpolator.getInterpolation(elapsed.toFloat() / duration), 0f)
                     marker.setAnchor(0.5f, 1.0f + 2 * t)
-
                     if (t > 0.0) {
                         handler.postDelayed(this, 16)
                     }
@@ -219,21 +230,38 @@ class MapActivity : AppCompatActivity(),
         }
         return false
     }
+    // TÄHÄN TULEE MARKERIEN CUSTOM CALLOUT, JOSKUS
+    internal inner class CustomInfoWindowAdapter : GoogleMap.InfoWindowAdapter {
 
+        override fun getInfoWindow(marker: Marker): View? {
+            TODO("Not yet implemented")
+            return null
+        }
+
+        override fun getInfoContents(marker: Marker): View? {
+            TODO("Not yet implemented")
+            return null
+        }
+    }
     // AJATUS OLISI AVATA VIESTIT EHTOJEN TÄYTTYESSÄ MARKERIN INFORUUTUA KLIKKAAMALLA
     override fun onInfoWindowClick(marker: Marker) {
-        Toast.makeText(this, "Tähän tulee viestin avausominaisuus", Toast.LENGTH_LONG).show()
+        if (checkOpenDistance(marker) && marker.tag != "user") {
+            Toast.makeText(this, "Tähän tulee viestin avausominaisuus", Toast.LENGTH_LONG).show()
+        }
     }
-
     // TÄHÄN SIT OMAN VIESTIN MUOKKAUS POISTO ETC
-    override fun onInfoWindowLongClick(p0: Marker) {
-        Toast.makeText(this, "Ja tästä mahdollisesti viestiä muokkaamaan", Toast.LENGTH_LONG).show()
+    override fun onInfoWindowLongClick(marker: Marker) {
+        if (marker.tag != "user") {
+            val post = marker.tag as Post
+            if (post.userID == LocalStorage.getUserId()) {
+                Toast.makeText(this, "Ja tästä mahdollisesti viestiä muokkaamaan", Toast.LENGTH_LONG).show()
+            }
+        }
     }
-    /*
-    override fun getInfoWindow(marker: Marker): View? {
 
-    }
-    */
+
+
+    // SIJAINTITIEDON LUVANHAKUA
     private fun checkPermissions(): Boolean {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
             == PackageManager.PERMISSION_GRANTED &&
@@ -255,6 +283,17 @@ class MapActivity : AppCompatActivity(),
         )
     }
 
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+            startService(service)
+            locationPermission = true
+        }
+    }
+
+
+
+    // EVENTBUSS / SERVICEJUTTUJA
     override fun onStart() {
         super.onStart()
         if (!EventBus.getDefault().isRegistered(this)) {
@@ -272,16 +311,4 @@ class MapActivity : AppCompatActivity(),
         super.onDestroy()
         stopService(service)
     }
-
-    // KOITA SAADA TÄÄ TOIMIIN
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        //if (requestCode == PERMISSION_ID) {
-            if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                startService(service)
-                locationPermission = true
-            }
-        //}
-    }
 }
-

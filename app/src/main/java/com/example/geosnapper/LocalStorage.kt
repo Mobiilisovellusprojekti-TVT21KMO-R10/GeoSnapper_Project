@@ -10,6 +10,7 @@ object LocalStorage {
     // TALLENNETTAVAT TIEDOT
     private const val USER_EMAIL = "USER_EMAIL"
     private const val USER_PASSWORD = "PASSWORD"
+    private const val USER_ID = "USER_ID"
     private const val VIEW_DISTANCE = "VIEW_DISTANCE"
 
     private var userPrefs : SharedPreferences? = null
@@ -36,6 +37,14 @@ object LocalStorage {
             }
         }
 
+    private var SharedPreferences.uid
+        get() = getString(USER_ID, "")
+        set(value) {
+            editMe {
+                it.putString(USER_ID, value)
+            }
+        }
+
     private var SharedPreferences.viewDistance
         get() = getInt(VIEW_DISTANCE, 0)
         set(value) {
@@ -50,6 +59,7 @@ object LocalStorage {
             editMe {
                 it.remove(USER_EMAIL)
                 it.remove(USER_PASSWORD)
+                it.remove(USER_ID)
                 it.remove(VIEW_DISTANCE)
             }
         }
@@ -58,9 +68,10 @@ object LocalStorage {
         userPrefs  = context.getSharedPreferences(USER_DATA, MODE_PRIVATE)
     }
 
-    fun saveLoginData(email: String, password: String) {
+    fun saveLoginData(email: String, password: String, uid: String) {
         userPrefs?.email = email
         userPrefs?.password = password
+        userPrefs?.uid = uid
     }
 
     fun setViewDistance(distance: Int) {
@@ -77,6 +88,10 @@ object LocalStorage {
 
     fun getPassword(): String {
         return userPrefs?.password.toString()
+    }
+
+    fun getUserId(): String {
+        return userPrefs?.uid.toString()
     }
 
     fun getViewDistance(): Int {

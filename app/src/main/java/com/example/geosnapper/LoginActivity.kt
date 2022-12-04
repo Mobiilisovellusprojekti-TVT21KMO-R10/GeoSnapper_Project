@@ -67,7 +67,7 @@ class LoginActivity : AppCompatActivity() {
                         uid = user.uid
                     }
                     Log.d("Login Activity", "Login oli muuten succesful")
-                    LocalStorage.saveLoginData(email, password)
+                    LocalStorage.saveLoginData(email, password, uid)
                     openApp(uid)
                 }
                 else {
