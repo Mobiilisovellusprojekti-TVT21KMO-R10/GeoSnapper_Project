@@ -104,6 +104,7 @@ class MapActivity : AppCompatActivity(),
         // TÄSSÄ ON NAPIT JOITA VOI KÄYTTÄÄ VALIKKOJEN YMS AVAAMISEEN
         binding.buttonTest1.setOnClickListener {
             val intent = Intent(this, MediaActivity::class.java)
+            intent.putExtra("userId", passedValue)
             startActivity(intent)
         }
         binding.buttonTest2.setOnClickListener {
@@ -152,6 +153,9 @@ class MapActivity : AppCompatActivity(),
         }
     }
 
+    public final fun getLocation(): LatLng {
+        return userLocation
+    }
 
 
     // MARKKERIJUTTUJA

@@ -1,5 +1,6 @@
 package com.example.geosnapper
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -16,7 +17,10 @@ class MediaActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
 
         val db = Database()
+        val mapActivity = MapActivity()
         super.onCreate(savedInstanceState)
+
+        val passedValue = intent.getStringExtra("userId")
 
         binding = ActivityMediaBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -27,9 +31,21 @@ class MediaActivity : AppCompatActivity() {
 
         binding.btnSubmit.setOnClickListener{
             val message = binding.editText.text.toString()
-            val messageObject = MessageData(message, "", Timestamp(Date()), com.google.android.gms.maps.model.LatLng(27.0,64.0), 1, "i69kfXgRYlR3EzhE4KHe9plDeVd2");
-            db.addMessage(messageObject)
-            Log.d("Media Activity", message)
+
+            Log.d("Media Activity", "nappi toimii")
+
+            if (passedValue != null){
+                val messageObject = MessageData(message, "", Timestamp(Date()), mapActivity.getLocation(), 1, passedValue);
+                db.addMessage(messageObject)
+                Log.d("Media Activity", message)
+
+                val intent = Intent(this, MapActivity::class.java)
+                startActivity(intent);
+            }
+            else
+            {
+                Log.d("Media Activity", "mentiin elseen")
+            }
         }
     }
 }
