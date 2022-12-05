@@ -5,13 +5,18 @@ import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.location.Location
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.SystemClock
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
 import android.view.View
 import android.view.animation.BounceInterpolator
+import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -126,7 +131,7 @@ class MapActivity : AppCompatActivity(),
         map.setOnMarkerClickListener(this)
         map.setOnInfoWindowClickListener(this)
         map.setOnInfoWindowLongClickListener(this)
-        //map.setInfoWindowAdapter(CustomInfoWindowAdapter())
+        map.setInfoWindowAdapter(CustomInfoWindowAdapter())
     }
 
     private fun updateMap(currentLocation: LatLng?) {
@@ -230,23 +235,67 @@ class MapActivity : AppCompatActivity(),
         }
         return false
     }
-    // TÄHÄN TULEE MARKERIEN CUSTOM CALLOUT, JOSKUS
+    // MARKERIEN CUSTOM CALLOUT
     internal inner class CustomInfoWindowAdapter : GoogleMap.InfoWindowAdapter {
+        private val infoWindow: View = layoutInflater.inflate(R.layout.infowindow, null)
 
         override fun getInfoWindow(marker: Marker): View? {
-            TODO("Not yet implemented")
+            if (marker.tag == "user") {
+                return null
+            }
+            render(marker, infoWindow)
+            return infoWindow
+        }
+
+        override fun getInfoContents(marker: Marker): View? {   // JOSTAIN SYYSTÄ VAATII TÄN
             return null
         }
 
-        override fun getInfoContents(marker: Marker): View? {
-            TODO("Not yet implemented")
-            return null
+        private fun render(marker: Marker, view: View) {
+            val post = marker.tag as Post
+
+            view.findViewById<ImageView>(R.id.userAvatar).setImageResource(R.drawable.test_avatar)
+
+            val userName: String = when (post.userID) {         // EI OO USERNAMEE NIIN TÄSSÄ ON VAAN NÄÄ HARDKOODATTUNA
+                "i69kfXgRYlR3EzhE4KHe9plDeVd2" -> "The Big E"
+                else -> "setäSomuli"
+            }
+            val userNameUi = view.findViewById<TextView>(R.id.userName)
+            userNameUi.text = userName
+
+            val title: String = post.type
+            val titleUi = view.findViewById<TextView>(R.id.title)
+            titleUi.text = SpannableString(title).apply {
+                setSpan(ForegroundColorSpan(Color.RED), 0, length, 0)
+            }
+
+            val description1Ui = view.findViewById<TextView>(R.id.description1)
+            val desc1: String
+            if (checkOpenDistance(marker) || post.userID == LocalStorage.getUserId()) {
+                desc1 = "Tap to open post"
+            } else {
+                desc1 = "You have to get closer to open"
+            }
+            description1Ui.text = desc1
+
+            val description2Ui = view.findViewById<TextView>(R.id.description2)
+            val desc2: String
+            if (post.userID == LocalStorage.getUserId()) {
+                desc2 = "Press long to edit"
+            }
+            else {
+                desc2 = ""
+            }
+            description2Ui.text = desc2
         }
     }
     // AJATUS OLISI AVATA VIESTIT EHTOJEN TÄYTTYESSÄ MARKERIN INFORUUTUA KLIKKAAMALLA
     override fun onInfoWindowClick(marker: Marker) {
-        if (checkOpenDistance(marker) && marker.tag != "user") {
-            Toast.makeText(this, "Tähän tulee viestin avausominaisuus", Toast.LENGTH_LONG).show()
+        if (marker.tag != "user") {
+            val post = marker.tag as Post
+            if (post.userID == LocalStorage.getUserId() || checkOpenDistance(marker)) {
+                Toast.makeText(this, "Tähän tulee viestin avausominaisuus", Toast.LENGTH_LONG).show()
+            }
         }
     }
     // TÄHÄN SIT OMAN VIESTIN MUOKKAUS POISTO ETC
@@ -267,7 +316,7 @@ class MapActivity : AppCompatActivity(),
             == PackageManager.PERMISSION_GRANTED &&
             ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
             == PackageManager.PERMISSION_GRANTED) {
-                startService(service)
+                startService(service)                   // TÄN VOIS SIIRTÄÄ
                 return true
         }
         return false

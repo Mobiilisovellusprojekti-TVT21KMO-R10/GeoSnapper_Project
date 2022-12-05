@@ -68,10 +68,10 @@ object LocalStorage {
         userPrefs  = context.getSharedPreferences(USER_DATA, MODE_PRIVATE)
     }
 
-    fun saveLoginData(email: String, password: String, uid: String) {
+    fun saveLoginData(email: String, password: String, userId: String) {
         userPrefs?.email = email
         userPrefs?.password = password
-        userPrefs?.uid = uid
+        userPrefs?.uid = userId
     }
 
     fun setViewDistance(distance: Int) {
