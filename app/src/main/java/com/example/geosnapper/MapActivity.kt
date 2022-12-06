@@ -13,6 +13,7 @@ import android.os.Handler
 import android.os.SystemClock
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
+import android.util.Log
 import android.view.View
 import android.view.animation.BounceInterpolator
 import android.widget.ImageView
@@ -41,6 +42,7 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import com.google.firebase.auth.FirebaseAuth
 import java.util.Random
+import java.io.Serializable
 
 class MapActivity : AppCompatActivity(),
     OnMapReadyCallback,
@@ -297,17 +299,23 @@ class MapActivity : AppCompatActivity(),
     override fun onInfoWindowClick(marker: Marker) {
         if (marker.tag != "user") {
             val post = marker.tag as Post
-            if (post.userID == LocalStorage.getUserId() || checkOpenDistance(marker)) {
-                Toast.makeText(this, "Tähän tulee viestin avausominaisuus", Toast.LENGTH_LONG).show()
-            }
+//            if (post.userID == LocalStorage.getUserId() || checkOpenDistance(marker)) {
+//
+//            }
+            val intent = Intent(this, ViewMessageActivity::class.java)
+            intent.putExtra("post", post)
+            startActivity(intent);
         }
     }
     // TÄHÄN SIT OMAN VIESTIN MUOKKAUS POISTO ETC
     override fun onInfoWindowLongClick(marker: Marker) {
+        Log.d("Map Activity", "tultiin onInfoWindowLongClickiin")
         if (marker.tag != "user") {
             val post = marker.tag as Post
             if (post.userID == LocalStorage.getUserId()) {
-                Toast.makeText(this, "Ja tästä mahdollisesti viestiä muokkaamaan", Toast.LENGTH_LONG).show()
+                val intent = Intent(this, ViewMessageActivity::class.java)
+                intent.putExtra("post", post)
+                startActivity(intent);
             }
         }
     }
