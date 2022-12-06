@@ -14,11 +14,11 @@ import android.os.SystemClock
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
 import android.util.Log
+import android.view.Gravity
+import android.view.LayoutInflater
 import android.view.View
 import android.view.animation.BounceInterpolator
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -302,9 +302,21 @@ class MapActivity : AppCompatActivity(),
 //            if (post.userID == LocalStorage.getUserId() || checkOpenDistance(marker)) {
 //
 //            }
-            val intent = Intent(this, ViewMessageActivity::class.java)
-            intent.putExtra("post", post)
-            startActivity(intent);
+            val inflater = getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
+            val popupView = inflater.inflate(R.layout.layout_popup, null)
+
+            // step 2
+            val wid = LinearLayout.LayoutParams.WRAP_CONTENT
+            val high = LinearLayout.LayoutParams.WRAP_CONTENT
+            val focus= true
+            val popupWindow = PopupWindow(popupView, wid, high, focus)
+
+            // step 3
+            popupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0)
+
+            val popupText = popupView.findViewById<TextView>(R.id.popup_window_text)
+            popupText.text = post.message
+
         }
     }
     // TÄHÄN SIT OMAN VIESTIN MUOKKAUS POISTO ETC
