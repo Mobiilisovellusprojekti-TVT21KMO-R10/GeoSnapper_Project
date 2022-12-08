@@ -21,13 +21,14 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import com.example.geosnapper.events.LocationEvent
+import com.example.geosnapper.locationService.LocationEvent
 import com.example.geosnapper.marker.MarkerConstants
 import com.example.geosnapper.marker.PostToMarker
 import com.example.geosnapper.post.Post
 import com.example.geosnapper.post.PostsReader
-import com.example.geosnapper.services.LocationService
+import com.example.geosnapper.locationService.LocationService
 import com.example.geosnapper.databinding.ActivityMapBinding
+import com.example.geosnapper.marker.MarkerRender
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -93,7 +94,7 @@ class MapActivity : AppCompatActivity(),
         setContentView(binding.root)
         service = Intent(this, LocationService::class.java)
         locationPermission = checkPermissions()
-        if (!locationPermission) requestPermissions()
+        if (!locationPermission) requestPermissions() else startService(service)
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
@@ -153,11 +154,6 @@ class MapActivity : AppCompatActivity(),
         }
     }
 
-    public final fun getLocation(): LatLng {
-        return userLocation
-    }
-
-
     // MARKKERIJUTTUJA
     private fun addMarkers() {
         val markers = PostToMarker().listHandler(posts)
@@ -182,7 +178,7 @@ class MapActivity : AppCompatActivity(),
         markersOnMap.add(markerBuilder)
     }
 
-    private fun calculateDistanceInMeters(coordinates: LatLng): Float {
+    fun calculateDistanceInMeters(coordinates: LatLng): Float {
         val results = FloatArray(1)
         Location.distanceBetween(
             userLocation.latitude,
@@ -194,17 +190,17 @@ class MapActivity : AppCompatActivity(),
         return results[0]
     }
 
-    private fun checkViewDistance(post: LatLng, tier: Int): Boolean {
-        val results = calculateDistanceInMeters(post)
+    fun checkViewDistance(coordinates: LatLng, tier: Int): Boolean {
+        val distance = calculateDistanceInMeters(coordinates)
         val viewDistance = when (tier) {
             1 -> MarkerConstants.TIER1_VIEWDISTANCE
             2 -> MarkerConstants.TIER2_VIEWDISTANCE
             else -> MarkerConstants.TIER3_VIEWDISTANCE
         }
-        return results < viewDistance
+        return distance < viewDistance
     }
 
-    private fun checkOpenDistance(marker: Marker): Boolean {
+    fun checkOpenDistance(marker: Marker): Boolean {
         val distance = calculateDistanceInMeters(marker.position)
         val result = when (marker.snippet) {
             "1" -> true
@@ -213,6 +209,7 @@ class MapActivity : AppCompatActivity(),
         }
         return result
     }
+
     // OLI GOOGLEN ESIMERKEISSÄ TOMMONEN HAUSKA POMPPUANIMAATIO JA VÄRINVAIHTO NIIN LAITOIN NE TOHON USER MARKKERIIN
     override fun onMarkerClick(marker : Marker): Boolean {
         selectedMarker = marker
@@ -247,7 +244,7 @@ class MapActivity : AppCompatActivity(),
             if (marker.tag == "user") {
                 return null
             }
-            render(marker, infoWindow)
+            renderInfoWindow(marker, infoWindow)
             return infoWindow
         }
 
@@ -255,7 +252,7 @@ class MapActivity : AppCompatActivity(),
             return null
         }
 
-        private fun render(marker: Marker, view: View) {
+        private fun renderInfoWindow(marker: Marker, view: View) {
             val post = marker.tag as Post
 
             view.findViewById<ImageView>(R.id.userAvatar).setImageResource(R.drawable.test_avatar)
@@ -301,6 +298,7 @@ class MapActivity : AppCompatActivity(),
                 Toast.makeText(this, "Tähän tulee viestin avausominaisuus", Toast.LENGTH_LONG).show()
             }
         }
+        marker.hideInfoWindow()
     }
     // TÄHÄN SIT OMAN VIESTIN MUOKKAUS POISTO ETC
     override fun onInfoWindowLongClick(marker: Marker) {
@@ -310,6 +308,7 @@ class MapActivity : AppCompatActivity(),
                 Toast.makeText(this, "Ja tästä mahdollisesti viestiä muokkaamaan", Toast.LENGTH_LONG).show()
             }
         }
+        marker.hideInfoWindow()
     }
 
 
@@ -320,7 +319,6 @@ class MapActivity : AppCompatActivity(),
             == PackageManager.PERMISSION_GRANTED &&
             ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
             == PackageManager.PERMISSION_GRANTED) {
-                startService(service)                   // TÄN VOIS SIIRTÄÄ
                 return true
         }
         return false

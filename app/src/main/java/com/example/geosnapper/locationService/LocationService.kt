@@ -1,10 +1,9 @@
-package com.example.geosnapper.Services
+package com.example.geosnapper.locationService
 
 import android.app.Service
 import android.content.Intent
 import android.location.Location
 import android.os.IBinder
-import com.example.geosnapper.Events.LocationEvent
 import com.google.android.gms.location.*
 import org.greenrobot.eventbus.EventBus
 
@@ -44,10 +43,12 @@ class LocationService : Service() {
 
     private fun onNewLocation(locationResult: LocationResult) {
         location = locationResult.lastLocation
-        EventBus.getDefault().post(LocationEvent(
+        EventBus.getDefault().post(
+            LocationEvent(
             latitude = location?.latitude,
             longitude = location?.longitude
-        ))
+        )
+        )
     }
 
     private fun stopLocationUpdates(){
