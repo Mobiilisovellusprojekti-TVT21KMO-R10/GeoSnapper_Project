@@ -1,29 +1,33 @@
 package com.example.geosnapper.post
 
 import com.google.android.gms.maps.model.LatLng
+import com.google.firebase.Timestamp
 
-data class PostResponse (                   // GOOGLEN MALLIN MUKAAN TEHTY. VARMAAN GEODATA KOHTAA PITÄIS PÄIVITTÄÄ
+data class PostResponse (
         val postId: String,
-        val created: String,
-        val geoData: Geometry,
-        val type: String,
-        val mediaLink: String,
-        val message: String,
-        val tier: Int,
         val uid: String,
+        val tier: Int,
+        val created: String,
+        val message: String,
+        val geoData: Geometry,
+        val mediaLink: String,
+        val type: String,
     ) {
-        data class Geometry(
+
+    data class Geometry(
             val location: GeometryLocation
         )
         data class GeometryLocation(
-            val lat: Double,
-            val lng: Double
+            val lat: Double = 0.0,
+            val lng: Double = 0.0
         )
+
     }
+
 
     fun PostResponse.toPost(): Post = Post(
         postId = postId,
-        created = created,
+        created = created.toString(),
         coordinates = LatLng(geoData.location.lat, geoData.location.lng),
         type = type,
         mediaLink = mediaLink,

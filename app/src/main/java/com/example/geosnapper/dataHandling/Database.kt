@@ -1,7 +1,8 @@
-package com.example.geosnapper
+package com.example.geosnapper.dataHandling
 
 import android.content.ContentValues
 import android.util.Log
+import com.example.geosnapper.MessageData
 import com.example.geosnapper.post.Post
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.firestore.ktx.firestore

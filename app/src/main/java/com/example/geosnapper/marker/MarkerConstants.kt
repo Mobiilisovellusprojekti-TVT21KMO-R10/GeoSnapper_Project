@@ -1,6 +1,6 @@
 package com.example.geosnapper.marker
 
-import com.example.geosnapper.LocalStorage
+import com.example.geosnapper.dataHandling.LocalStorage
 
 object MarkerConstants {     // NIIN KUIN NÄKYY NÄÄ ON VAAN HAHMOTTELUVAIHEESSA
 

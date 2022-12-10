@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Base64
 import android.util.Log
 import android.widget.Toast
+import com.example.geosnapper.dataHandling.LocalStorage
 import com.example.geosnapper.databinding.ActivityLoginBinding
 import com.google.firebase.auth.FirebaseAuth
 import java.math.BigInteger

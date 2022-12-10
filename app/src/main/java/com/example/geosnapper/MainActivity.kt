@@ -4,9 +4,8 @@ package com.example.geosnapper
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.content.Intent
-import android.util.Log
+import com.example.geosnapper.dataHandling.LocalStorage
 import com.example.geosnapper.databinding.ActivityMainBinding
-import com.google.firebase.auth.FirebaseAuth
 
 
 class MainActivity : AppCompatActivity() {

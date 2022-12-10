@@ -1,7 +1,6 @@
 package com.example.geosnapper
 
 import android.Manifest
-import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -22,15 +21,14 @@ import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import com.example.geosnapper.dataHandling.Database
+import com.example.geosnapper.dataHandling.LocalStorage
 import com.example.geosnapper.locationService.LocationEvent
 import com.example.geosnapper.marker.MarkerConstants
 import com.example.geosnapper.marker.PostToMarker
 import com.example.geosnapper.post.Post
-import com.example.geosnapper.post.PostsReader
 import com.example.geosnapper.locationService.LocationService
 import com.example.geosnapper.databinding.ActivityMapBinding
-import com.example.geosnapper.marker.MarkerRender
-import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -42,8 +40,10 @@ import com.google.android.gms.maps.model.MarkerOptions
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import java.util.Random
-import java.io.Serializable
+
 
 class MapActivity : AppCompatActivity(),
     OnMapReadyCallback,
@@ -55,19 +55,16 @@ class MapActivity : AppCompatActivity(),
     private lateinit var map: GoogleMap
     private lateinit var binding: ActivityMapBinding
     private lateinit var service: Intent
-    private lateinit var client: FusedLocationProviderClient
     private lateinit var firebaseAuth: FirebaseAuth
     private var setMapOnUserLocation = true
     private lateinit var  selectedMarker: Marker
     private var locationPermission = false
     private var userLocation = LatLng(0.0, 0.0)
-    private lateinit var animator: ValueAnimator
     private lateinit var userMarker: Marker
     private var markersOnMap = ArrayList<Marker>()
+    private val database = Database()
+    private var posts: List<Post>? = null
 
-    private val posts: List<Post> by lazy {         // TÄÄ ON VÄLIAIKAINEN RATKAISU TESTAILUA VARTEN
-        PostsReader(this).read()
-    }
 
     // LOCATIONSERVICE VAATII TÄMMÖSET HIRVITYKSET
     private val backgroundLocation = registerForActivityResult(ActivityResultContracts.RequestPermission()) {
@@ -91,7 +88,6 @@ class MapActivity : AppCompatActivity(),
         super.onCreate(savedInstanceState)
 
         firebaseAuth = FirebaseAuth.getInstance()
-        client = LocationServices.getFusedLocationProviderClient(this)
         binding = ActivityMapBinding.inflate(layoutInflater)
         setContentView(binding.root)
         service = Intent(this, LocationService::class.java)
@@ -101,13 +97,11 @@ class MapActivity : AppCompatActivity(),
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
-        // Käyttäjän USERID on tässä muuttujassa
-        val passedValue = intent.getStringExtra("userId")
-
         // TÄSSÄ ON NAPIT JOITA VOI KÄYTTÄÄ VALIKKOJEN YMS AVAAMISEEN
         binding.buttonTest1.setOnClickListener {
             val intent = Intent(this, MediaActivity::class.java)
-            intent.putExtra("userId", passedValue)
+            intent.putExtra("lat", userLocation.latitude.toString())
+            intent.putExtra("lng", userLocation.longitude.toString())
             startActivity(intent)
         }
         binding.buttonTest2.setOnClickListener {
@@ -116,12 +110,12 @@ class MapActivity : AppCompatActivity(),
         }
         binding.buttonLogout.setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)     // LOG OUTILLE OIS EHKÄ LOOGISEMPI JA PAREMPI PAIKKA JOSSAIN ASETUKSISSA, EIHÄN ME HALUTA ETTÄ KÄYTTÄJÄT NOIN HELPOSTI SOVELLUKSEN KÄYTÖN LOPETTAA:)
-            intent.putExtra("userId", "null")
             firebaseAuth.signOut()
             LocalStorage.initialize()   // PYYHITÄÄN LAITTEESEEN TALLENNETUT TIEDOT
-            startActivity(intent)
+            finish()
         }
     }
+
 
 
     // KARTAN PÄIVITYSTÄ
@@ -145,6 +139,7 @@ class MapActivity : AppCompatActivity(),
                 map.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 12f))
                 userMarker = map.addMarker(MarkerOptions().position(currentLocation).title("Happy GeoSnapping"))!!
                 userMarker.tag = "user"
+                getPostsFromDatabase()
                 addMarkers()
             }
             else {
@@ -156,11 +151,18 @@ class MapActivity : AppCompatActivity(),
         }
     }
 
+    private fun getPostsFromDatabase() = runBlocking {
+        launch {
+            posts = database.getAllMessages()
+        }
+    }
+
+
     // MARKKERIJUTTUJA
     private fun addMarkers() {
-        val markers = PostToMarker().listHandler(posts)
-        markers.forEach { marker ->
-            val post = posts.find {it.postId == marker.postId}
+        val markers = posts?.let { PostToMarker().listHandler(it) }
+        markers?.forEach { marker ->
+            val post = posts?.find {it.postId == marker.postId}
             if (post != null) {
                 placeMarkerOnMap(marker, post)
             }
@@ -296,24 +298,23 @@ class MapActivity : AppCompatActivity(),
     override fun onInfoWindowClick(marker: Marker) {
         if (marker.tag != "user") {
             val post = marker.tag as Post
-//            if (post.userID == LocalStorage.getUserId() || checkOpenDistance(marker)) {
-//
-//            }
-            val inflater = getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
-            val popupView = inflater.inflate(R.layout.layout_popup, null)
+            //if (post.userID == LocalStorage.getUserId() || checkOpenDistance(marker)) {
 
-            // step 2
-            val wid = LinearLayout.LayoutParams.WRAP_CONTENT
-            val high = LinearLayout.LayoutParams.WRAP_CONTENT
-            val focus= true
-            val popupWindow = PopupWindow(popupView, wid, high, focus)
+                val inflater = getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
+                val popupView = inflater.inflate(R.layout.layout_popup, null)
 
-            // step 3
-            popupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0)
+                // step 2
+                val wid = LinearLayout.LayoutParams.WRAP_CONTENT
+                val high = LinearLayout.LayoutParams.WRAP_CONTENT
+                val focus = true
+                val popupWindow = PopupWindow(popupView, wid, high, focus)
 
-            val popupText = popupView.findViewById<TextView>(R.id.popup_window_text)
-            popupText.text = post.message
+                // step 3
+                popupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0)
 
+                val popupText = popupView.findViewById<TextView>(R.id.popup_window_text)
+                popupText.text = post.message
+            //}
         }
         marker.hideInfoWindow()
     }

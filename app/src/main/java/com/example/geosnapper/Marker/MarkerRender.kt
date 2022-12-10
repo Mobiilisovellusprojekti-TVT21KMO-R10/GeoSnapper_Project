@@ -1,20 +1,7 @@
 package com.example.geosnapper.marker
 
-import android.graphics.Color
-import android.location.Location
-import android.text.SpannableString
-import android.text.style.ForegroundColorSpan
-import android.view.View
-import android.widget.ImageView
-import android.widget.TextView
-import com.example.geosnapper.LocalStorage
-import com.example.geosnapper.MapActivity
-import com.example.geosnapper.R
-import com.example.geosnapper.post.Post
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
-
 object MarkerRender {
+    /*
     fun calculateDistanceInMeters(coordinates: LatLng): Float {
         val results = FloatArray(1)
         Location.distanceBetween(
@@ -84,4 +71,6 @@ object MarkerRender {
         }
         description2Ui.text = desc2
     }
+
+     */
 }

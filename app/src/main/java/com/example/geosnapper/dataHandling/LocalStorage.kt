@@ -1,4 +1,4 @@
-package com.example.geosnapper
+package com.example.geosnapper.dataHandling
 
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
