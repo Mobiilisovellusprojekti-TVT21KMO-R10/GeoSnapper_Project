@@ -1,21 +1,39 @@
 package com.example.geosnapper.marker
 
+import android.graphics.Color
+import android.location.Location
+import android.os.Handler
+import android.os.SystemClock
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
+import android.view.View
+import android.view.animation.BounceInterpolator
+import android.widget.ImageView
+import android.widget.TextView
+import com.example.geosnapper.R
+import com.example.geosnapper.dataHandling.LocalStorage
+import com.example.geosnapper.post.Post
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
+import java.util.*
+
 object MarkerRender {
-    /*
-    fun calculateDistanceInMeters(coordinates: LatLng): Float {
+
+   fun calculateDistanceInMeters(userLocation: LatLng, postCoordinates: LatLng): Float {
         val results = FloatArray(1)
         Location.distanceBetween(
-            MapActivity().getLocation().latitude,
-            MapActivity().getLocation().longitude,
-            coordinates.latitude,
-            coordinates.longitude,
+            userLocation.latitude,
+            userLocation.longitude,
+            postCoordinates.latitude,
+            postCoordinates.longitude,
             results
         )
         return results[0]
     }
 
-    fun checkViewDistance(coordinates: LatLng, tier: Int): Boolean {
-        val distance = calculateDistanceInMeters(coordinates)
+    fun checkViewDistance(userLocation: LatLng ,postCoordinates: LatLng, tier: Int): Boolean {
+        val distance = calculateDistanceInMeters(userLocation, postCoordinates)
         val viewDistance = when (tier) {
             1 -> MarkerConstants.TIER1_VIEWDISTANCE
             2 -> MarkerConstants.TIER2_VIEWDISTANCE
@@ -24,8 +42,8 @@ object MarkerRender {
         return distance < viewDistance
     }
 
-    fun checkOpenDistance(marker: Marker): Boolean {
-        val distance = calculateDistanceInMeters(marker.position)
+    fun checkOpenDistance(userLocation: LatLng, marker: Marker): Boolean {
+        val distance = calculateDistanceInMeters(userLocation, marker.position)
         val result = when (marker.snippet) {
             "1" -> true
             "2" -> true
@@ -34,7 +52,7 @@ object MarkerRender {
         return result
     }
 
-    private fun renderInfoWindow(marker: Marker, view: View) {
+    fun renderInfoWindow(userLocation: LatLng, marker: Marker, view: View) {
         val post = marker.tag as Post
 
         view.findViewById<ImageView>(R.id.userAvatar).setImageResource(R.drawable.test_avatar)
@@ -54,9 +72,10 @@ object MarkerRender {
 
         val description1Ui = view.findViewById<TextView>(R.id.description1)
         val desc1: String
-        if (MarkerRender.checkOpenDistance(marker) || post.userID == LocalStorage.getUserId()) {
+        if (checkOpenDistance(userLocation, marker) || post.userID == LocalStorage.getUserId()) {
             desc1 = "Tap to open post"
-        } else {
+        }
+        else {
             desc1 = "You have to get closer to open"
         }
         description1Ui.text = desc1
@@ -72,5 +91,28 @@ object MarkerRender {
         description2Ui.text = desc2
     }
 
-     */
+    fun jumpAnimation(marker: Marker) {
+        val handler = Handler()
+        val start = SystemClock.uptimeMillis()
+        val duration = 1500
+        val interpolator = BounceInterpolator()
+        handler.post(object : Runnable {
+            override fun run() {
+                val elapsed = SystemClock.uptimeMillis() - start
+                val t = Math.max(
+                    1 - interpolator.getInterpolation(elapsed.toFloat() / duration), 0f)
+                marker.setAnchor(0.5f, 1.0f + 2 * t)
+                if (t > 0.0) {
+                    handler.postDelayed(this, 16)
+                }
+            }
+        })
+    }
+
+    fun changeRandomColor(marker: Marker) {
+        val random = Random()
+        marker.apply {
+            setIcon(BitmapDescriptorFactory.defaultMarker(random.nextFloat() * 360))
+        }
+    }
 }

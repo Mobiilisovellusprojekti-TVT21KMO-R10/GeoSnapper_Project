@@ -20,6 +20,7 @@ class MediaActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         val passedValue = intent.getStringExtra("lat")
+
         val coordinates =  LatLng(
             intent.getStringExtra("lat")!!.toDouble(),
             intent.getStringExtra("lng")!!.toDouble()

@@ -1,14 +1,15 @@
-package com.example.geosnapper.Marker
+package com.example.geosnapper.marker
 
+import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.LatLng
-import com.google.maps.android.clustering.ClusterItem
 
-data class Marker (
+data class MarkerClass (
         val coordinates: LatLng,
         val tier: Int,
         val type: String,
         val postId: String,
-        val expires: String
+        val expires: String,
+        val icon: BitmapDescriptor,
     )
 
 

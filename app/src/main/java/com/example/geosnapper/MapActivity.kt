@@ -1,39 +1,29 @@
 package com.example.geosnapper
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Color
-import android.location.Location
-import android.os.Build
 import android.os.Bundle
-import android.os.Handler
-import android.os.SystemClock
-import android.text.SpannableString
-import android.text.style.ForegroundColorSpan
 import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
-import android.view.animation.BounceInterpolator
 import android.widget.*
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.example.geosnapper.dataHandling.Database
 import com.example.geosnapper.dataHandling.LocalStorage
 import com.example.geosnapper.locationService.LocationEvent
-import com.example.geosnapper.marker.MarkerConstants
-import com.example.geosnapper.marker.PostToMarker
+import com.example.geosnapper.marker.PostToMarkerClass
 import com.example.geosnapper.post.Post
 import com.example.geosnapper.locationService.LocationService
 import com.example.geosnapper.databinding.ActivityMapBinding
+import com.example.geosnapper.locationService.LocationPermissions
+import com.example.geosnapper.marker.MarkerRender
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
@@ -42,7 +32,6 @@ import org.greenrobot.eventbus.Subscribe
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import java.util.Random
 
 
 class MapActivity : AppCompatActivity(),
@@ -57,32 +46,14 @@ class MapActivity : AppCompatActivity(),
     private lateinit var service: Intent
     private lateinit var firebaseAuth: FirebaseAuth
     private var setMapOnUserLocation = true
-    private lateinit var  selectedMarker: Marker
     private var locationPermission = false
     private var userLocation = LatLng(0.0, 0.0)
     private lateinit var userMarker: Marker
     private var markersOnMap = ArrayList<Marker>()
-    private val database = Database()
     private var posts: List<Post>? = null
+    private val database = Database()
+    private val locationPermissions = LocationPermissions(this)
 
-
-    // LOCATIONSERVICE VAATII TÄMMÖSET HIRVITYKSET
-    private val backgroundLocation = registerForActivityResult(ActivityResultContracts.RequestPermission()) {
-    }
-    private val locationPermissions = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
-        when {
-            it.getOrDefault(android.Manifest.permission.ACCESS_COARSE_LOCATION, false) -> {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_BACKGROUND_LOCATION)
-                        != PackageManager.PERMISSION_GRANTED) {
-                        backgroundLocation.launch(android.Manifest.permission.ACCESS_BACKGROUND_LOCATION)
-                    }
-                }
-            }
-            it.getOrDefault(android.Manifest.permission.ACCESS_FINE_LOCATION, false) -> {
-            }
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -91,8 +62,8 @@ class MapActivity : AppCompatActivity(),
         binding = ActivityMapBinding.inflate(layoutInflater)
         setContentView(binding.root)
         service = Intent(this, LocationService::class.java)
-        locationPermission = checkPermissions()
-        if (!locationPermission) requestPermissions() else startService(service)
+        locationPermission = locationPermissions.checkPermissions()
+        if (!locationPermission) locationPermissions.requestPermissions() else startService(service)
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
@@ -109,9 +80,8 @@ class MapActivity : AppCompatActivity(),
             startActivity(intent)
         }
         binding.buttonLogout.setOnClickListener {
-            val intent = Intent(this, MainActivity::class.java)     // LOG OUTILLE OIS EHKÄ LOOGISEMPI JA PAREMPI PAIKKA JOSSAIN ASETUKSISSA, EIHÄN ME HALUTA ETTÄ KÄYTTÄJÄT NOIN HELPOSTI SOVELLUKSEN KÄYTÖN LOPETTAA:)
-            firebaseAuth.signOut()
-            LocalStorage.initialize()   // PYYHITÄÄN LAITTEESEEN TALLENNETUT TIEDOT
+            firebaseAuth.signOut()              // LOG OUTILLE OIS EHKÄ LOOGISEMPI JA PAREMPI PAIKKA JOSSAIN ASETUKSISSA, EIHÄN ME HALUTA ETTÄ KÄYTTÄJÄT NOIN HELPOSTI SOVELLUKSEN KÄYTÖN LOPETTAA:)
+            LocalStorage.initialize()           // PYYHITÄÄN LAITTEESEEN TALLENNETUT TIEDOT
             finish()
         }
     }
@@ -145,7 +115,7 @@ class MapActivity : AppCompatActivity(),
             else {
                 userMarker.position = currentLocation
                 markersOnMap.map {
-                    it.isVisible = checkViewDistance(it.position, it.snippet!!.toInt())     // MUISTA PÄIVITTÄÄ TÄÄ
+                    it.isVisible = MarkerRender.checkViewDistance(userLocation, it.position, it.snippet!!.toInt())     // MUISTA PÄIVITTÄÄ TÄÄ
                 }
             }
         }
@@ -158,9 +128,10 @@ class MapActivity : AppCompatActivity(),
     }
 
 
+
     // MARKKERIJUTTUJA
     private fun addMarkers() {
-        val markers = posts?.let { PostToMarker().listHandler(it) }
+        val markers = posts?.let { PostToMarkerClass().listHandler(it) }
         markers?.forEach { marker ->
             val post = posts?.find {it.postId == marker.postId}
             if (post != null) {
@@ -169,129 +140,45 @@ class MapActivity : AppCompatActivity(),
         }
     }
 
-    private fun placeMarkerOnMap(marker: com.example.geosnapper.marker.Marker, post: Post) {
-        val distance = calculateDistanceInMeters(marker.coordinates).toString()             // TÄÄ ON TESTAILUA
+    private fun placeMarkerOnMap(markerClass: com.example.geosnapper.marker.MarkerClass, post: Post) {
+        val distance = MarkerRender.calculateDistanceInMeters(userLocation, markerClass.coordinates).toString()             // TÄÄ ON TESTAILUA
         val markerBuilder = map.addMarker(MarkerOptions()
-            .position(marker.coordinates)
+            .position(markerClass.coordinates)
             .title(post.message + ", Etäisyys käyttäjästä: " + distance + " m")       // TESTAILUA
-            .icon(marker.icon)
-            .snippet(marker.tier.toString())
-            .visible(checkViewDistance(marker.coordinates, marker.tier))
+            .icon(markerClass.icon)
+            .snippet(markerClass.tier.toString())
+            .visible(MarkerRender.checkViewDistance(userLocation, markerClass.coordinates, markerClass.tier))
         )
         markerBuilder!!.tag = post
         markersOnMap.add(markerBuilder)
     }
 
-    fun calculateDistanceInMeters(coordinates: LatLng): Float {
-        val results = FloatArray(1)
-        Location.distanceBetween(
-            userLocation.latitude,
-            userLocation.longitude,
-            coordinates.latitude,
-            coordinates.longitude,
-            results
-        )
-        return results[0]
+    private fun removeMarker(marker: Marker) {
+        marker.remove()
+        markersOnMap.find{it == marker}?.remove()
+        val post = marker.tag as Post
+        database.deleteMessage(post.postId)
     }
 
-    fun checkViewDistance(coordinates: LatLng, tier: Int): Boolean {
-        val distance = calculateDistanceInMeters(coordinates)
-        val viewDistance = when (tier) {
-            1 -> MarkerConstants.TIER1_VIEWDISTANCE
-            2 -> MarkerConstants.TIER2_VIEWDISTANCE
-            else -> MarkerConstants.TIER3_VIEWDISTANCE
-        }
-        return distance < viewDistance
-    }
-
-    fun checkOpenDistance(marker: Marker): Boolean {
-        val distance = calculateDistanceInMeters(marker.position)
-        val result = when (marker.snippet) {
-            "1" -> true
-            "2" -> true
-            else -> distance < MarkerConstants.TIER3_OPENDISTANCE
-        }
-        return result
-    }
-
-    // OLI GOOGLEN ESIMERKEISSÄ TOMMONEN HAUSKA POMPPUANIMAATIO JA VÄRINVAIHTO NIIN LAITOIN NE TOHON USER MARKKERIIN
     override fun onMarkerClick(marker : Marker): Boolean {
-        selectedMarker = marker
         if (marker.tag == "user") {
-            val handler = Handler()
-            val start = SystemClock.uptimeMillis()
-            val duration = 1500
-            val interpolator = BounceInterpolator()
-            handler.post(object : Runnable {
-                override fun run() {
-                    val elapsed = SystemClock.uptimeMillis() - start
-                    val t = Math.max(
-                        1 - interpolator.getInterpolation(elapsed.toFloat() / duration), 0f)
-                    marker.setAnchor(0.5f, 1.0f + 2 * t)
-                    if (t > 0.0) {
-                        handler.postDelayed(this, 16)
-                    }
-                }
-            })
-            val random = Random()
-            marker.apply {
-                setIcon(BitmapDescriptorFactory.defaultMarker(random.nextFloat() * 360))
-            }
+            MarkerRender.jumpAnimation(marker)
+            MarkerRender.changeRandomColor(marker)
         }
         return false
     }
-    // MARKERIEN CUSTOM CALLOUT
+
     internal inner class CustomInfoWindowAdapter : GoogleMap.InfoWindowAdapter {
         private val infoWindow: View = layoutInflater.inflate(R.layout.infowindow, null)
-
         override fun getInfoWindow(marker: Marker): View? {
             if (marker.tag == "user") {
                 return null
             }
-            renderInfoWindow(marker, infoWindow)
+            MarkerRender.renderInfoWindow(userLocation, marker, infoWindow)
             return infoWindow
         }
-
         override fun getInfoContents(marker: Marker): View? {   // JOSTAIN SYYSTÄ VAATII TÄN
             return null
-        }
-
-        private fun renderInfoWindow(marker: Marker, view: View) {
-            val post = marker.tag as Post
-
-            view.findViewById<ImageView>(R.id.userAvatar).setImageResource(R.drawable.test_avatar)
-
-            val userName: String = when (post.userID) {         // EI OO USERNAMEE NIIN TÄSSÄ ON VAAN NÄÄ HARDKOODATTUNA
-                "i69kfXgRYlR3EzhE4KHe9plDeVd2" -> "The Big E"
-                else -> "setäSomuli"
-            }
-            val userNameUi = view.findViewById<TextView>(R.id.userName)
-            userNameUi.text = userName
-
-            val title: String = post.type
-            val titleUi = view.findViewById<TextView>(R.id.title)
-            titleUi.text = SpannableString(title).apply {
-                setSpan(ForegroundColorSpan(Color.RED), 0, length, 0)
-            }
-
-            val description1Ui = view.findViewById<TextView>(R.id.description1)
-            val desc1: String
-            if (checkOpenDistance(marker) || post.userID == LocalStorage.getUserId()) {
-                desc1 = "Tap to open post"
-            } else {
-                desc1 = "You have to get closer to open"
-            }
-            description1Ui.text = desc1
-
-            val description2Ui = view.findViewById<TextView>(R.id.description2)
-            val desc2: String
-            if (post.userID == LocalStorage.getUserId()) {
-                desc2 = "Press long to edit"
-            }
-            else {
-                desc2 = ""
-            }
-            description2Ui.text = desc2
         }
     }
     // AJATUS OLISI AVATA VIESTIT EHTOJEN TÄYTTYESSÄ MARKERIN INFORUUTUA KLIKKAAMALLA
@@ -334,25 +221,12 @@ class MapActivity : AppCompatActivity(),
 
 
 
-    // SIJAINTITIEDON LUVANHAKUA
-    private fun checkPermissions(): Boolean {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
-            == PackageManager.PERMISSION_GRANTED &&
-            ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-            == PackageManager.PERMISSION_GRANTED) {
-                return true
+    // EVENTBUSS / SERVICEJUTTUJA
+    override fun onStart() {
+        super.onStart()
+        if (!EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().register(this)
         }
-        return false
-    }
-
-    private fun requestPermissions() {
-        Toast.makeText(this, "Please allow the app to use location data", Toast.LENGTH_LONG).show()
-        locationPermissions.launch(
-            arrayOf(
-                android.Manifest.permission.ACCESS_FINE_LOCATION,
-                android.Manifest.permission.ACCESS_COARSE_LOCATION
-            )
-        )
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
@@ -360,16 +234,6 @@ class MapActivity : AppCompatActivity(),
         if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
             startService(service)
             locationPermission = true
-        }
-    }
-
-
-
-    // EVENTBUSS / SERVICEJUTTUJA
-    override fun onStart() {
-        super.onStart()
-        if (!EventBus.getDefault().isRegistered(this)) {
-            EventBus.getDefault().register(this)
         }
     }
 

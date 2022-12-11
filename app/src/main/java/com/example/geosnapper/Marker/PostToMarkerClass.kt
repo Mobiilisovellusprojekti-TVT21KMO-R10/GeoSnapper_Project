@@ -4,9 +4,9 @@ import com.example.geosnapper.post.Post
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 
-class PostToMarker {
+class PostToMarkerClass {
 
-    fun Post.toMarker(): Marker = Marker(
+    fun Post.toMarkerClass(): MarkerClass = MarkerClass(
         coordinates = coordinates,
         tier = tier,
         type = type,
@@ -39,9 +39,9 @@ class PostToMarker {
         return icon
     }
 
-    fun listHandler(posts: List<Post>): List<Marker> {
+    fun listHandler(posts: List<Post>): List<MarkerClass> {
         return posts.map {
-            it.toMarker()
+            it.toMarkerClass()
         }
     }
 

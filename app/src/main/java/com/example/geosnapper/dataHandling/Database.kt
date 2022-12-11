@@ -5,6 +5,7 @@ import android.util.Log
 import com.example.geosnapper.MessageData
 import com.example.geosnapper.post.Post
 import com.google.android.gms.maps.model.LatLng
+import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
@@ -42,7 +43,7 @@ class Database {
                 val post: Post = Post(
                     gson.toJson(it.id),
                     values[2],
-                    editLocationData(values[4]), //koordinaatit
+                    editLocationData(values[4]),
                     "message",
                     values[5],
                     values[3],
@@ -59,11 +60,22 @@ class Database {
             .replaceBefore('=', "")
             .replaceAfter(',', "")
             .trim('=', ',')
-        val latitude= latitudeString.toDouble()
+        val latitude = latitudeString.toDouble()
         val longitudeString = data
             .replaceBeforeLast('=', "")
             .trim('=', '}')
         val longitude = longitudeString.toDouble()
         return LatLng(latitude,longitude)
+    }
+
+    fun deleteMessage(postId: String): Boolean {
+        val document = db.collection(MESSAGE_DATA).document(postId)
+        return try {
+            document.delete()
+            true
+        }
+        catch (e: FirebaseFirestoreException) {
+            false
+        }
     }
 }
