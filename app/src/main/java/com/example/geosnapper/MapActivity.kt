@@ -15,11 +15,12 @@ import com.example.geosnapper.dataHandling.Database
 import com.example.geosnapper.dataHandling.LocalStorage
 import com.example.geosnapper.locationService.LocationEvent
 import com.example.geosnapper.marker.PostToMarkerClass
-import com.example.geosnapper.post.Post
 import com.example.geosnapper.locationService.LocationService
 import com.example.geosnapper.databinding.ActivityMapBinding
 import com.example.geosnapper.locationService.LocationPermissions
+import com.example.geosnapper.marker.MarkerClass
 import com.example.geosnapper.marker.MarkerRender
+import com.example.geosnapper.post.Post
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -140,7 +141,7 @@ class MapActivity : AppCompatActivity(),
         }
     }
 
-    private fun placeMarkerOnMap(markerClass: com.example.geosnapper.marker.MarkerClass, post: Post) {
+    private fun placeMarkerOnMap(markerClass: MarkerClass, post: Post) {
         val distance = MarkerRender.calculateDistanceInMeters(userLocation, markerClass.coordinates).toString()             // TÄÄ ON TESTAILUA
         val markerBuilder = map.addMarker(MarkerOptions()
             .position(markerClass.coordinates)
@@ -154,10 +155,15 @@ class MapActivity : AppCompatActivity(),
     }
 
     private fun removeMarker(marker: Marker) {
-        marker.remove()
-        markersOnMap.find{it == marker}?.remove()
         val post = marker.tag as Post
-        database.deleteMessage(post.postId)
+        if (database.deleteMessage(post.postId)) {
+            marker.remove()
+            markersOnMap.find{it == marker}?.remove()
+            Toast.makeText(this, "Post deteted successfully", Toast.LENGTH_LONG).show()
+        }
+        else {
+            Toast.makeText(this, "Post deletion failed", Toast.LENGTH_LONG).show()
+        }
     }
 
     override fun onMarkerClick(marker : Marker): Boolean {
