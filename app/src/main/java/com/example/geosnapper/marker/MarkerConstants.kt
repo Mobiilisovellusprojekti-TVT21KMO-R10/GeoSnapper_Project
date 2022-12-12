@@ -2,7 +2,7 @@ package com.example.geosnapper.Marker
 
 import com.example.geosnapper.dataHandling.LocalStorage
 
-object MarkerConstants1 {     // NIIN KUIN NÄKYY NÄÄ ON VAAN HAHMOTTELUVAIHEESSA
+object MarkerConstants {     // NIIN KUIN NÄKYY NÄÄ ON VAAN HAHMOTTELUVAIHEESSA
 
     val TIER1_LIFETIME = 1
     val TIER2_LIFETIME = 1
