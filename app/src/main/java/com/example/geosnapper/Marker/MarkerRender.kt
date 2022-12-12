@@ -10,6 +10,7 @@ import android.view.View
 import android.view.animation.BounceInterpolator
 import android.widget.ImageView
 import android.widget.TextView
+import com.example.geosnapper.Marker.MarkerConstants1
 import com.example.geosnapper.R
 import com.example.geosnapper.dataHandling.LocalStorage
 import com.example.geosnapper.post.Post
@@ -35,9 +36,9 @@ object MarkerRender {
     fun checkViewDistance(userLocation: LatLng ,postCoordinates: LatLng, tier: Int): Boolean {
         val distance = calculateDistanceInMeters(userLocation, postCoordinates)
         val viewDistance = when (tier) {
-            1 -> MarkerConstants.TIER1_VIEWDISTANCE
-            2 -> MarkerConstants.TIER2_VIEWDISTANCE
-            else -> MarkerConstants.TIER3_VIEWDISTANCE
+            1 -> MarkerConstants1.TIER1_VIEWDISTANCE
+            2 -> MarkerConstants1.TIER2_VIEWDISTANCE
+            else -> MarkerConstants1.TIER3_VIEWDISTANCE
         }
         return distance < viewDistance
     }
@@ -47,7 +48,7 @@ object MarkerRender {
         val result = when (marker.snippet) {
             "1" -> true
             "2" -> true
-            else -> distance < MarkerConstants.TIER3_OPENDISTANCE
+            else -> distance < MarkerConstants1.TIER3_OPENDISTANCE
         }
         return result
     }

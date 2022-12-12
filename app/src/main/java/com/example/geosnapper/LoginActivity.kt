@@ -87,8 +87,8 @@ class LoginActivity : AppCompatActivity() {
         val email = LocalStorage.getEmail()
         val password = LocalStorage.getPassword()
         if (email != "Pekka" && password != "Sauri") {      // HASSUTTELUA, KORJATTAVA JOTKU CLEAN CODE ARVOT
-            openApp(LocalStorage.getUserId())                            // OLISI MYÖS MAHDOLLISTA TALLENTAA UID JA KIRJATA SEN KANS SUORAAN SISÄÄN. EI TOSIN OO TURVALLISIN RATKAISU
-            //firebaseLogIn(email, password)
+            //openApp(LocalStorage.getUserId())                            // OLISI MYÖS MAHDOLLISTA TALLENTAA UID JA KIRJATA SEN KANS SUORAAN SISÄÄN. EI TOSIN OO TURVALLISIN RATKAISU
+            firebaseLogIn(email, password)
         }
     }
 
