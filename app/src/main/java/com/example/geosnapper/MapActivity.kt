@@ -81,9 +81,9 @@ class MapActivity : AppCompatActivity(),
             startActivity(intent)
         }
         binding.buttonLogout.setOnClickListener {
-            firebaseAuth.signOut()              // LOG OUTILLE OIS EHKÄ LOOGISEMPI JA PAREMPI PAIKKA JOSSAIN ASETUKSISSA, EIHÄN ME HALUTA ETTÄ KÄYTTÄJÄT NOIN HELPOSTI SOVELLUKSEN KÄYTÖN LOPETTAA:)
-            LocalStorage.initialize()           // PYYHITÄÄN LAITTEESEEN TALLENNETUT TIEDOT
-            finish()
+            //firebaseAuth.signOut()              // LOG OUTILLE OIS EHKÄ LOOGISEMPI JA PAREMPI PAIKKA JOSSAIN ASETUKSISSA, EIHÄN ME HALUTA ETTÄ KÄYTTÄJÄT NOIN HELPOSTI SOVELLUKSEN KÄYTÖN LOPETTAA:)
+            //LocalStorage.initialize()           // PYYHITÄÄN LAITTEESEEN TALLENNETUT TIEDOT
+            //finish()
         }
     }
 
@@ -110,8 +110,9 @@ class MapActivity : AppCompatActivity(),
                 map.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 12f))
                 userMarker = map.addMarker(MarkerOptions().position(currentLocation).title("Happy GeoSnapping"))!!
                 userMarker.tag = "user"
-                getPostsFromDatabase()
-                addMarkers()
+                //getPostsFromDatabase()
+                database.getAllMessages2()
+                //addMarkers()
             }
             else {
                 userMarker.position = currentLocation
@@ -124,6 +125,7 @@ class MapActivity : AppCompatActivity(),
 
     private fun getPostsFromDatabase() = runBlocking {
         launch {
+            Log.d("datesti", "Ja terse")
             posts = database.getAllMessages()
         }
     }
@@ -141,17 +143,17 @@ class MapActivity : AppCompatActivity(),
         }
     }
 
-    private fun placeMarkerOnMap(markerClass: MarkerClass, post: Post) {
-        val distance = MarkerRender.calculateDistanceInMeters(userLocation, markerClass.coordinates).toString()             // TÄÄ ON TESTAILUA
+    private fun placeMarkerOnMap(marker: MarkerClass, post: Post) {
         val markerBuilder = map.addMarker(MarkerOptions()
-            .position(markerClass.coordinates)
-            .title(post.message + ", Etäisyys käyttäjästä: " + distance + " m")       // TESTAILUA
-            .icon(markerClass.icon)
-            .snippet(markerClass.tier.toString())
-            .visible(MarkerRender.checkViewDistance(userLocation, markerClass.coordinates, markerClass.tier))
+            .position(marker.coordinates)
+            .icon(marker.icon)
+            .snippet(marker.tier.toString())
+            .visible(MarkerRender.checkViewDistance(userLocation, marker.coordinates, marker.tier))
         )
-        markerBuilder!!.tag = post
-        markersOnMap.add(markerBuilder)
+        markerBuilder?.tag = post
+        if (markerBuilder != null) {
+            markersOnMap.add(markerBuilder)
+        }
     }
 
     private fun removeMarker(marker: Marker) {
@@ -247,6 +249,12 @@ class MapActivity : AppCompatActivity(),
     fun receiveLocationEvent(locationEvent: LocationEvent) {
         userLocation = LatLng(locationEvent.latitude!!, locationEvent.longitude!!)
         updateMap(userLocation)
+    }
+
+    @Subscribe
+    fun receivePostsEvent(PostsEvent: List<Post>) {
+        posts = PostsEvent
+        addMarkers()
     }
 
     override fun onDestroy() {

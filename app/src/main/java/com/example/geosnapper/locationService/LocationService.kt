@@ -47,7 +47,7 @@ class LocationService : Service() {
             LocationEvent(
             latitude = location?.latitude,
             longitude = location?.longitude
-        )
+            )
         )
     }
 
