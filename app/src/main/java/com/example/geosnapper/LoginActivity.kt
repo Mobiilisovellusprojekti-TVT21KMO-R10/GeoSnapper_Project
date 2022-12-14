@@ -40,7 +40,7 @@ class LoginActivity : AppCompatActivity() {
         binding.btnSubmit.setOnClickListener{
             val email = binding.etEmail.text.toString()
             val password = hasher(binding.etPassword.text.toString())
-
+            openApp("i69kfXgRYlR3EzhE4KHe9plDeVd2")
             // iffin sisään tulee julkaisuversiossa if(email.isNotEmpty() && password.isNotEmpty())
             val temporaryCondition = true
             if (temporaryCondition){
@@ -87,8 +87,8 @@ class LoginActivity : AppCompatActivity() {
         val email = LocalStorage.getEmail()
         val password = LocalStorage.getPassword()
         if (email != "Pekka" && password != "Sauri") {      // HASSUTTELUA, KORJATTAVA JOTKU CLEAN CODE ARVOT
-            //openApp(LocalStorage.getUserId())                            // OLISI MYÖS MAHDOLLISTA TALLENTAA UID JA KIRJATA SEN KANS SUORAAN SISÄÄN. EI TOSIN OO TURVALLISIN RATKAISU
-            firebaseLogIn(email, password)
+            openApp(LocalStorage.getUserId())                            // OLISI MYÖS MAHDOLLISTA TALLENTAA UID JA KIRJATA SEN KANS SUORAAN SISÄÄN. EI TOSIN OO TURVALLISIN RATKAISU
+            //firebaseLogIn(email, password)
         }
     }
 

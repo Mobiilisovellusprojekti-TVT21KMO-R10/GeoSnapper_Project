@@ -3,6 +3,7 @@ package com.example.geosnapper.dataHandling
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
+import android.webkit.WebChromeClient.FileChooserParams.MODE_OPEN
 
 object LocalStorage {
     // TALLENNETTAVA TIEDOSTO
