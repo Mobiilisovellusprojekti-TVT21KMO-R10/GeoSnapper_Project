@@ -33,9 +33,11 @@ class Database {
 
     // kun ei osaa niin jälki on tän näköistä :DDD pääasia kuitenkin kai et toimii
     suspend fun getAllMessages(): List<Post> {
+        Log.d("testiii", "Ja päivväää")
         val messages = ArrayList<Post>()
         db.collection(MESSAGE_DATA)
             .get().await().forEach {
+                Log.d("testiii", "haetaan tietojaaaa")
                 val values: MutableList<String> = mutableListOf()
                 it.data.values.forEach {
                     values.add(it.toString())
@@ -50,6 +52,7 @@ class Database {
                     values[1].toInt(),
                     values[0],
                 )
+                Log.d("testiii", "POSTI: $post")
                 messages.add(post)
             }
         return messages
