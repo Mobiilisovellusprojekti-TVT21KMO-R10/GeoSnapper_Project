@@ -64,7 +64,6 @@ class Database {
             .addOnFailureListener { exception ->
                 Log.d("datesti", "eeee onnistu")
             }
-
     }
 
     // kun ei osaa niin jälki on tän näköistä :DDD pääasia kuitenkin kai et toimii

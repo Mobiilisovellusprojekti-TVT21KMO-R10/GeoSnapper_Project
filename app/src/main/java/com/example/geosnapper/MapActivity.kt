@@ -1,16 +1,27 @@
 package com.example.geosnapper
 
+import android.animation.ArgbEvaluator
+import android.animation.ValueAnimator
 import android.annotation.SuppressLint
+import android.app.ProgressDialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
+import android.view.animation.DecelerateInterpolator
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.cardview.widget.CardView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.ColorUtils
 import com.example.geosnapper.dataHandling.Database
 import com.example.geosnapper.dataHandling.LocalStorage
 import com.example.geosnapper.locationService.LocationEvent
@@ -54,6 +65,7 @@ class MapActivity : AppCompatActivity(),
     private var posts: List<Post>? = null
     private val database = Database()
     private val locationPermissions = LocationPermissions(this)
+    private lateinit var locationDialog: ProgressDialog
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -81,31 +93,35 @@ class MapActivity : AppCompatActivity(),
             startActivity(intent)
         }
         binding.buttonLogout.setOnClickListener {
-            //firebaseAuth.signOut()              // LOG OUTILLE OIS EHKÄ LOOGISEMPI JA PAREMPI PAIKKA JOSSAIN ASETUKSISSA, EIHÄN ME HALUTA ETTÄ KÄYTTÄJÄT NOIN HELPOSTI SOVELLUKSEN KÄYTÖN LOPETTAA:)
-            //LocalStorage.initialize()           // PYYHITÄÄN LAITTEESEEN TALLENNETUT TIEDOT
-            //finish()
+            firebaseAuth.signOut()              // LOG OUTILLE OIS EHKÄ LOOGISEMPI JA PAREMPI PAIKKA JOSSAIN ASETUKSISSA, EIHÄN ME HALUTA ETTÄ KÄYTTÄJÄT NOIN HELPOSTI SOVELLUKSEN KÄYTÖN LOPETTAA:)
+            LocalStorage.initialize()
+            finish()
         }
     }
-
 
 
     // KARTAN PÄIVITYSTÄ
     @SuppressLint("PotentialBehaviorOverride")
     override fun onMapReady(googleMap: GoogleMap) {
-
-        // MAHD. TÄHÄN MAPFRGAMENTIN HIDEEMINEN JOS EI OO LOKAATIOTIETOO SALLITTU TAI SITTEN JONNEKKIN MUUALLE
-
         map = googleMap
         map.uiSettings.isZoomControlsEnabled = true
         map.setOnMarkerClickListener(this)
         map.setOnInfoWindowClickListener(this)
         map.setOnInfoWindowLongClickListener(this)
         map.setInfoWindowAdapter(CustomInfoWindowAdapter())
+        locationDialog = ProgressDialog(this)
+        locationDialog.setTitle("Getting location")
+        locationDialog.setMessage("Please wait")
+        locationDialog.setCancelable(false)
+        locationDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER)
+        locationDialog.getWindow()?.setBackgroundDrawable(ColorDrawable(Color.GRAY))
+        locationDialog.show()
     }
 
     private fun updateMap(currentLocation: LatLng?) {
         if (currentLocation != null) {
             if (setMapOnUserLocation) {
+                locationDialog.dismiss()
                 setMapOnUserLocation = false
                 map.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 12f))
                 userMarker = map.addMarker(MarkerOptions().position(currentLocation).title("Happy GeoSnapping"))!!
@@ -125,11 +141,9 @@ class MapActivity : AppCompatActivity(),
 
     private fun getPostsFromDatabase() = runBlocking {
         launch {
-            Log.d("datesti", "Ja terse")
             posts = database.getAllMessages()
         }
     }
-
 
 
     // MARKKERIJUTTUJA
@@ -215,13 +229,31 @@ class MapActivity : AppCompatActivity(),
     }
     // TÄHÄN SIT OMAN VIESTIN MUOKKAUS POISTO ETC
     override fun onInfoWindowLongClick(marker: Marker) {
-        Log.d("Map Activity", "tultiin onInfoWindowLongClickiin")
         if (marker.tag != "user") {
             val post = marker.tag as Post
             if (post.userID == LocalStorage.getUserId()) {
-                val intent = Intent(this, ViewMessageActivity::class.java)
-                intent.putExtra("post", post)
-                startActivity(intent);
+                val popupView: View = layoutInflater.inflate(R.layout.editmessage_popup, null)
+
+                val wid = LinearLayout.LayoutParams.WRAP_CONTENT
+                val high = LinearLayout.LayoutParams.WRAP_CONTENT
+                val focus = true
+                val popupWindow = PopupWindow(popupView, wid, high, focus)
+                popupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0)
+                popupView.findViewById<CardView>(R.id.popup_window_view_with_border).alpha = 0f
+                popupView.findViewById<CardView>(R.id.popup_window_view_with_border).animate().alpha(1f)
+                    .setDuration(600)
+                    .setInterpolator(DecelerateInterpolator())
+                    .start()
+
+                val popupText = popupView.findViewById<TextView>(R.id.popup_window_text)
+                popupText.text = post.message
+                popupView.findViewById<Button>(R.id.btn_delete).setOnClickListener {
+                    removeMarker(marker)
+                    popupWindow.dismiss()
+                }
+                popupView.findViewById<Button>(R.id.btn_close).setOnClickListener {
+                    popupWindow.dismiss()
+                }
             }
         }
         marker.hideInfoWindow()
