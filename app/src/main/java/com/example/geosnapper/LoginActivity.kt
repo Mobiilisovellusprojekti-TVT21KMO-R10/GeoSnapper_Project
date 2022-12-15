@@ -40,7 +40,7 @@ class LoginActivity : AppCompatActivity() {
         binding.btnSubmit.setOnClickListener{
             val email = binding.etEmail.text.toString()
             val password = hasher(binding.etPassword.text.toString())
-
+            openApp("i69kfXgRYlR3EzhE4KHe9plDeVd2")
             // iffin sisään tulee julkaisuversiossa if(email.isNotEmpty() && password.isNotEmpty())
             val temporaryCondition = true
             if (temporaryCondition){

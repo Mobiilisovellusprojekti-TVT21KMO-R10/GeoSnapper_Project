@@ -4,6 +4,7 @@ import android.app.Service
 import android.content.Intent
 import android.location.Location
 import android.os.IBinder
+import android.util.Log
 import com.google.android.gms.location.*
 import org.greenrobot.eventbus.EventBus
 
@@ -47,7 +48,7 @@ class LocationService : Service() {
             LocationEvent(
             latitude = location?.latitude,
             longitude = location?.longitude
-        )
+            )
         )
     }
 

@@ -1,6 +1,6 @@
 package com.example.geosnapper.Marker
 
-import com.example.geosnapper.LocalStorage
+import com.example.geosnapper.dataHandling.LocalStorage
 
 object MarkerConstants {     // NIIN KUIN NÄKYY NÄÄ ON VAAN HAHMOTTELUVAIHEESSA
 
@@ -10,7 +10,7 @@ object MarkerConstants {     // NIIN KUIN NÄKYY NÄÄ ON VAAN HAHMOTTELUVAIHEES
     val TIER1_VIEWDISTANCE = 15000
     val TIER2_VIEWDISTANCE = 10000
     val TIER3_VIEWDISTANCE = getMarkerViewDistanceFromMemory()
-    val MARKER_OPENDISTANCE = 1
+    val TIER3_OPENDISTANCE = 1
 
     // HAETAAN ETÄISYYSARVO PUHELIMEN MUISTISTA JOS MUISTIIN ON ASETETTU ARVO, MUUTEN VAKIO 5000
     private fun getMarkerViewDistanceFromMemory(): Int {
