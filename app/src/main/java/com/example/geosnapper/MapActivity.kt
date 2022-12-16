@@ -3,6 +3,7 @@ package com.example.geosnapper
 import android.animation.ArgbEvaluator
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.app.ProgressDialog
 import android.content.DialogInterface
 import android.content.Intent
@@ -10,6 +11,8 @@ import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
 import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -66,6 +69,7 @@ class MapActivity : AppCompatActivity(),
     private val database = Database()
     private val locationPermissions = LocationPermissions(this)
     private lateinit var locationDialog: ProgressDialog
+    private val popupRender = EditMessagePopupRender(this)
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -171,15 +175,8 @@ class MapActivity : AppCompatActivity(),
     }
 
     private fun removeMarker(marker: Marker) {
-        val post = marker.tag as Post
-        if (database.deleteMessage(post.postId)) {
-            marker.remove()
-            markersOnMap.find{it == marker}?.remove()
-            Toast.makeText(this, "Post deteted successfully", Toast.LENGTH_LONG).show()
-        }
-        else {
-            Toast.makeText(this, "Post deletion failed", Toast.LENGTH_LONG).show()
-        }
+        marker.remove()
+        markersOnMap.find{it == marker}?.remove()
     }
 
     override fun onMarkerClick(marker : Marker): Boolean {
@@ -227,33 +224,13 @@ class MapActivity : AppCompatActivity(),
         }
         marker.hideInfoWindow()
     }
-    // TÄHÄN SIT OMAN VIESTIN MUOKKAUS POISTO ETC
+
     override fun onInfoWindowLongClick(marker: Marker) {
         if (marker.tag != "user") {
             val post = marker.tag as Post
             if (post.userID == LocalStorage.getUserId()) {
                 val popupView: View = layoutInflater.inflate(R.layout.editmessage_popup, null)
-
-                val wid = LinearLayout.LayoutParams.WRAP_CONTENT
-                val high = LinearLayout.LayoutParams.WRAP_CONTENT
-                val focus = true
-                val popupWindow = PopupWindow(popupView, wid, high, focus)
-                popupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0)
-                popupView.findViewById<CardView>(R.id.popup_window_view_with_border).alpha = 0f
-                popupView.findViewById<CardView>(R.id.popup_window_view_with_border).animate().alpha(1f)
-                    .setDuration(600)
-                    .setInterpolator(DecelerateInterpolator())
-                    .start()
-
-                val popupText = popupView.findViewById<TextView>(R.id.popup_window_text)
-                popupText.text = post.message
-                popupView.findViewById<Button>(R.id.btn_delete).setOnClickListener {
-                    removeMarker(marker)
-                    popupWindow.dismiss()
-                }
-                popupView.findViewById<Button>(R.id.btn_close).setOnClickListener {
-                    popupWindow.dismiss()
-                }
+                popupRender.render(popupView, marker, ::removeMarker)
             }
         }
         marker.hideInfoWindow()

@@ -12,7 +12,7 @@ data class Post (
     val coordinates: LatLng,
     val type: String,
     val mediaLink: String,
-    val message: String,
-    val tier: Int,
+    var message: String,
+    var tier: Int,
     val userID: String,
 ) : Parcelable

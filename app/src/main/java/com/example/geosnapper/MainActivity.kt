@@ -20,7 +20,6 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         LocalStorage.setup(applicationContext)
-        LocalStorage.saveLoginData("asd", "asd", "asd")
 
         //tässä muuttujassa on käyttäjän ID.
         val passedValue = intent.getStringExtra("userId")
