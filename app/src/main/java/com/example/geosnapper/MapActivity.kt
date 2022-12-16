@@ -1,30 +1,18 @@
 package com.example.geosnapper
 
-import android.animation.ArgbEvaluator
-import android.animation.ValueAnimator
 import android.annotation.SuppressLint
-import android.app.AlertDialog
 import android.app.ProgressDialog
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.text.SpannableString
-import android.text.style.ForegroundColorSpan
-import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
-import android.view.animation.DecelerateInterpolator
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import androidx.cardview.widget.CardView
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import androidx.core.graphics.ColorUtils
 import com.example.geosnapper.dataHandling.Database
 import com.example.geosnapper.dataHandling.LocalStorage
 import com.example.geosnapper.locationService.LocationEvent
@@ -85,7 +73,7 @@ class MapActivity : AppCompatActivity(),
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
-        // TÄSSÄ ON NAPIT JOITA VOI KÄYTTÄÄ VALIKKOJEN YMS AVAAMISEEN
+
         binding.buttonTest1.setOnClickListener {
             val intent = Intent(this, MediaActivity::class.java)
             intent.putExtra("lat", userLocation.latitude.toString())
@@ -118,7 +106,7 @@ class MapActivity : AppCompatActivity(),
         locationDialog.setMessage("Please wait")
         locationDialog.setCancelable(false)
         locationDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER)
-        locationDialog.getWindow()?.setBackgroundDrawable(ColorDrawable(Color.GRAY))
+        locationDialog.window?.setBackgroundDrawable(ColorDrawable(Color.GRAY))
         locationDialog.show()
     }
 
@@ -130,9 +118,7 @@ class MapActivity : AppCompatActivity(),
                 map.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 12f))
                 userMarker = map.addMarker(MarkerOptions().position(currentLocation).title("Happy GeoSnapping"))!!
                 userMarker.tag = "user"
-                //getPostsFromDatabase()
                 database.getAllMessages2()
-                //addMarkers()
             }
             else {
                 userMarker.position = currentLocation
@@ -140,12 +126,6 @@ class MapActivity : AppCompatActivity(),
                     it.isVisible = MarkerRender.checkViewDistance(userLocation, it.position, it.snippet!!.toInt())     // MUISTA PÄIVITTÄÄ TÄÄ
                 }
             }
-        }
-    }
-
-    private fun getPostsFromDatabase() = runBlocking {
-        launch {
-            posts = database.getAllMessages()
         }
     }
 
@@ -204,7 +184,7 @@ class MapActivity : AppCompatActivity(),
     override fun onInfoWindowClick(marker: Marker) {
         if (marker.tag != "user") {
             val post = marker.tag as Post
-            //if (post.userID == LocalStorage.getUserId() || checkOpenDistance(marker)) {
+            if (post.userID == LocalStorage.getUserId() || MarkerRender.checkOpenDistance(userLocation, marker)) {
 
                 val inflater = getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
                 val popupView = inflater.inflate(R.layout.layout_popup, null)
@@ -220,7 +200,7 @@ class MapActivity : AppCompatActivity(),
 
                 val popupText = popupView.findViewById<TextView>(R.id.popup_window_text)
                 popupText.text = post.message
-            //}
+            }
         }
         marker.hideInfoWindow()
     }
@@ -235,7 +215,6 @@ class MapActivity : AppCompatActivity(),
         }
         marker.hideInfoWindow()
     }
-
 
 
     // EVENTBUSS / SERVICEJUTTUJA

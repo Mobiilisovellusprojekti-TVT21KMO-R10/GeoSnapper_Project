@@ -47,15 +47,10 @@ class EditMessagePopupRender(private val context: Context) {
 
         deleteButton.setOnClickListener {
             val builder = AlertDialog.Builder(context)
-                .setTitle(SpannableString("DELETE POST").apply {
-                    setSpan(ForegroundColorSpan(ContextCompat.getColor(context, R.color.red)), 0, this.length, 0)
-                })
+                .setTitle(coloredText("DELETE POST", R.color.red))
                 .setMessage("Are you sure you want to delete the post?")
-                .setPositiveButton(
-                    SpannableString("Delete").apply {
-                    setSpan(ForegroundColorSpan(ContextCompat.getColor(context, R.color.red)), 0, this.length, 0)
-                },
-                    DialogInterface.OnClickListener { dialog, id ->
+                .setPositiveButton(coloredText("Delete", R.color.red),
+                    DialogInterface.OnClickListener { _, _ ->
                         if (Database().deleteMessage(post.postId)) {
                             removeMarker(marker)
                             popupWindow.dismiss()
@@ -67,7 +62,7 @@ class EditMessagePopupRender(private val context: Context) {
                     }
                 )
                 .setNegativeButton("Cancel",
-                    DialogInterface.OnClickListener { dialog, id ->
+                    DialogInterface.OnClickListener { _, _ ->
                     }
                 )
             builder.create().show()
@@ -92,20 +87,15 @@ class EditMessagePopupRender(private val context: Context) {
 
         if (post.tier == 3) upgradeButton.visibility = View.VISIBLE
         upgradeButton.setOnClickListener {
-            val message: String = "Upgrade your post to TIER 1 only at 1€"
+            val message = "Upgrade your post to TIER 1 only at 1€"
             val builder = AlertDialog.Builder(context)
-                .setTitle(SpannableString("UPGRADE POST").apply {
-                    setSpan(ForegroundColorSpan(ContextCompat.getColor(context, R.color.green)), 0, this.length, 0)
-                })
+                .setTitle(coloredText("UPGRADE POST",R.color.green))
                 .setMessage(SpannableString(message).apply {
                     setSpan(ForegroundColorSpan(ContextCompat.getColor(context, R.color.gold)), 21, 27, 0)
                     setSpan(ForegroundColorSpan(ContextCompat.getColor(context, R.color.red)), 28, message.length, 0)
                 })
-                .setPositiveButton(
-                    SpannableString("Buy").apply {
-                    setSpan(ForegroundColorSpan(ContextCompat.getColor(context, R.color.green)), 0, this.length, 0)
-                },
-                    DialogInterface.OnClickListener { dialog, id ->
+                .setPositiveButton(coloredText("Buy",R.color.green),
+                    DialogInterface.OnClickListener { _, _ ->
                         if (Database().updatePostsOneValue(post.postId, "tier", 1)) {
                             marker.setIcon(PostToMarkerClass().iconSelector(1, post.type))
                             post.tier = 1
@@ -116,14 +106,17 @@ class EditMessagePopupRender(private val context: Context) {
                         }
                     }
                 )
-                .setNegativeButton(
-                    SpannableString("Cancel").apply {
-                    setSpan(ForegroundColorSpan(ContextCompat.getColor(context, R.color.red)), 0, this.length, 0)
-                },
-                    DialogInterface.OnClickListener { dialog, id ->
+                .setNegativeButton("Cancel",
+                    DialogInterface.OnClickListener { _, _ ->
                     }
                 )
             builder.create().show()
+        }
+    }
+
+    private fun coloredText(text: String, colorResource: Int): SpannableString {
+        return SpannableString(text).apply {
+            setSpan(ForegroundColorSpan(ContextCompat.getColor(context, colorResource)), 0, this.length, 0)
         }
     }
 }
