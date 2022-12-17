@@ -44,13 +44,13 @@ class Database {
                     }
                     val post: Post = Post(
                         gson.toJson(document.id),
-                        values[2],
-                        editLocationData(values[4]),
+                        values[document.data.keys.indexOf("created")],
+                        editLocationData(values[document.data.keys.indexOf("geoData")]),
                         "message",
-                        values[5],
-                        values[3],
-                        values[1].toInt(),
-                        values[0],
+                        values[document.data.keys.indexOf("mediaLink")],
+                        values[document.data.keys.indexOf("message")],
+                        values[document.data.keys.indexOf("tier")].toInt(),
+                        values[document.data.keys.indexOf("uid")],
                     )
                     messages.add(post)
                 }
@@ -96,7 +96,7 @@ class Database {
     }
 
     fun deleteMessage(postId: String): Boolean {
-        val document = db.collection(MESSAGE_DATA).document(postId)
+        val document = db.collection(MESSAGE_DATA).document(postId.trim('"'))
         return try {
             document.delete()
             true
@@ -106,7 +106,7 @@ class Database {
         }
     }
     fun updatePostsOneValue(postId: String, key:String, value: Any): Boolean {
-        val document = db.collection(MESSAGE_DATA).document(postId)
+        val document = db.collection(MESSAGE_DATA).document(postId.trim('"'))
         return try {
             document.update(key, value)
             true
