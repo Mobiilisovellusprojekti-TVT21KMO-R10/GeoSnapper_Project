@@ -40,23 +40,17 @@ class LoginActivity : AppCompatActivity() {
         binding.btnSubmit.setOnClickListener{
             val email = binding.etEmail.text.toString()
             val password = hasher(binding.etPassword.text.toString())
-            
-            // iffin sisään tulee julkaisuversiossa if(email.isNotEmpty() && password.isNotEmpty())
-            val temporaryCondition = true
-            if (temporaryCondition){
-                firebaseLogIn("teronsahkoposti@gmail.com", "tero1234")
+
+            Log.d("Login Activity", email + "" + password)
+
+            if (email.isNotEmpty() && password.isNotEmpty()){
+                firebaseLogIn(email,password)
             }
             else {
                 Toast.makeText(this, "Empty fields are not allowed.", Toast.LENGTH_SHORT).show()
             }
         }
     }
-
-    // MÄÄ VÄHÄN RÄPELSIN TÄTÄ
-    // KIRJAUTUESSA TALLENNETAAN KÄYTTÄJÖTIEDOT
-    // KIRJAUDUTAAN KÄYTTÖJÄTIEDOILLA
-    // KIRJAUTUMINEN JA APP-AUKAISU FUNKTIOSSA
-    // SALASANAN HASHAUS
 
     private fun firebaseLogIn(email: String, password: String) {
         firebaseAuth = FirebaseAuth.getInstance()
@@ -78,6 +72,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun openApp(uid: String) {
+        Log.d("Login Activity", "Tultiin openAppiin")
         val intent = Intent(this, MainActivity::class.java)
         intent.putExtra("userId", uid)
         startActivity(intent)
@@ -93,7 +88,6 @@ class LoginActivity : AppCompatActivity() {
     }
 
     fun hasher(password: String): String {
-        //if (paid == done) sendToChina(password)
         val md = MessageDigest.getInstance("MD5")
         val base16Hash = BigInteger(1, md.digest(password.toByteArray())).toString(16).padStart(32, '0')
         return Base64.encodeToString(base16Hash.toByteArray(), 16).trim()

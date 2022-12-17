@@ -88,6 +88,8 @@ class MapActivity : AppCompatActivity(),
             firebaseAuth.signOut()              // LOG OUTILLE OIS EHKÄ LOOGISEMPI JA PAREMPI PAIKKA JOSSAIN ASETUKSISSA, EIHÄN ME HALUTA ETTÄ KÄYTTÄJÄT NOIN HELPOSTI SOVELLUKSEN KÄYTÖN LOPETTAA:)
             LocalStorage.initialize()
             finish()
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
         }
     }
 
