@@ -33,17 +33,13 @@ class Database {
     }
 
     fun getAllMessages2(){
-        Log.d("datesti", "Testi")
         val messages = ArrayList<Post>()
-        val collection = db.collection("messageData")
+        val collection = db.collection(MESSAGE_DATA)
             .get()
             .addOnSuccessListener { documents ->
                 for (document in documents) {
-                    Log.d("datesti", "haetaan tietojazz")
                     val values: MutableList<String> = mutableListOf()
-                    Log.d("datesti", "${document.data}")
                     document.data.values.forEach {
-                        Log.d("datesti", "$it")
                         values.add(it.toString())
                     }
                     val post: Post = Post(
@@ -56,24 +52,17 @@ class Database {
                         values[1].toInt(),
                         values[0],
                     )
-                    Log.d("datesti", "POSTI: $post")
                     messages.add(post)
                 }
                 EventBus.getDefault().post(messages)
             }
-            .addOnFailureListener { exception ->
-                Log.d("datesti", "eeee onnistu")
-            }
-
     }
 
     // kun ei osaa niin jälki on tän näköistä :DDD pääasia kuitenkin kai et toimii
     suspend fun getAllMessages(): List<Post> {
-        Log.d("datesti", "Ja päivvväää")
         val messages = ArrayList<Post>()
         db.collection(MESSAGE_DATA)
             .get().await().forEach {
-                Log.d("datesti", "haetaan tietojazzz")
                 val values: MutableList<String> = mutableListOf()
                 it.data.values.forEach {
                     values.add(it.toString())
@@ -88,7 +77,6 @@ class Database {
                     values[1].toInt(),
                     values[0],
                 )
-                Log.d("datesti", "POSTI: $post")
                 messages.add(post)
             }
         return messages
@@ -111,6 +99,16 @@ class Database {
         val document = db.collection(MESSAGE_DATA).document(postId)
         return try {
             document.delete()
+            true
+        }
+        catch (e: FirebaseFirestoreException) {
+            false
+        }
+    }
+    fun updatePostsOneValue(postId: String, key:String, value: Any): Boolean {
+        val document = db.collection(MESSAGE_DATA).document(postId)
+        return try {
+            document.update(key, value)
             true
         }
         catch (e: FirebaseFirestoreException) {

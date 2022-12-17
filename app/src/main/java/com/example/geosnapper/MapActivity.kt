@@ -1,10 +1,12 @@
 package com.example.geosnapper
 
 import android.annotation.SuppressLint
+import android.app.ProgressDialog
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -54,6 +56,8 @@ class MapActivity : AppCompatActivity(),
     private var posts: List<Post>? = null
     private val database = Database()
     private val locationPermissions = LocationPermissions(this)
+    private lateinit var locationDialog: ProgressDialog
+    private val popupRender = EditMessagePopupRender(this)
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,7 +73,7 @@ class MapActivity : AppCompatActivity(),
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
-        // TÄSSÄ ON NAPIT JOITA VOI KÄYTTÄÄ VALIKKOJEN YMS AVAAMISEEN
+
         binding.buttonTest1.setOnClickListener {
             val intent = Intent(this, MediaActivity::class.java)
             intent.putExtra("lat", userLocation.latitude.toString())
@@ -81,38 +85,40 @@ class MapActivity : AppCompatActivity(),
             startActivity(intent)
         }
         binding.buttonLogout.setOnClickListener {
-            //firebaseAuth.signOut()              // LOG OUTILLE OIS EHKÄ LOOGISEMPI JA PAREMPI PAIKKA JOSSAIN ASETUKSISSA, EIHÄN ME HALUTA ETTÄ KÄYTTÄJÄT NOIN HELPOSTI SOVELLUKSEN KÄYTÖN LOPETTAA:)
-            //LocalStorage.initialize()           // PYYHITÄÄN LAITTEESEEN TALLENNETUT TIEDOT
-            //finish()
+            firebaseAuth.signOut()              // LOG OUTILLE OIS EHKÄ LOOGISEMPI JA PAREMPI PAIKKA JOSSAIN ASETUKSISSA, EIHÄN ME HALUTA ETTÄ KÄYTTÄJÄT NOIN HELPOSTI SOVELLUKSEN KÄYTÖN LOPETTAA:)
+            LocalStorage.initialize()
+            finish()
         }
     }
-
 
 
     // KARTAN PÄIVITYSTÄ
     @SuppressLint("PotentialBehaviorOverride")
     override fun onMapReady(googleMap: GoogleMap) {
-
-        // MAHD. TÄHÄN MAPFRGAMENTIN HIDEEMINEN JOS EI OO LOKAATIOTIETOO SALLITTU TAI SITTEN JONNEKKIN MUUALLE
-
         map = googleMap
         map.uiSettings.isZoomControlsEnabled = true
         map.setOnMarkerClickListener(this)
         map.setOnInfoWindowClickListener(this)
         map.setOnInfoWindowLongClickListener(this)
         map.setInfoWindowAdapter(CustomInfoWindowAdapter())
+        locationDialog = ProgressDialog(this)
+        locationDialog.setTitle("Getting location")
+        locationDialog.setMessage("Please wait")
+        locationDialog.setCancelable(false)
+        locationDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER)
+        locationDialog.window?.setBackgroundDrawable(ColorDrawable(Color.GRAY))
+        locationDialog.show()
     }
 
     private fun updateMap(currentLocation: LatLng?) {
         if (currentLocation != null) {
             if (setMapOnUserLocation) {
+                locationDialog.dismiss()
                 setMapOnUserLocation = false
                 map.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 12f))
                 userMarker = map.addMarker(MarkerOptions().position(currentLocation).title("Happy GeoSnapping"))!!
                 userMarker.tag = "user"
-                //getPostsFromDatabase()
                 database.getAllMessages2()
-                //addMarkers()
             }
             else {
                 userMarker.position = currentLocation
@@ -122,14 +128,6 @@ class MapActivity : AppCompatActivity(),
             }
         }
     }
-
-    private fun getPostsFromDatabase() = runBlocking {
-        launch {
-            Log.d("datesti", "Ja terse")
-            posts = database.getAllMessages()
-        }
-    }
-
 
 
     // MARKKERIJUTTUJA
@@ -157,15 +155,8 @@ class MapActivity : AppCompatActivity(),
     }
 
     private fun removeMarker(marker: Marker) {
-        val post = marker.tag as Post
-        if (database.deleteMessage(post.postId)) {
-            marker.remove()
-            markersOnMap.find{it == marker}?.remove()
-            Toast.makeText(this, "Post deteted successfully", Toast.LENGTH_LONG).show()
-        }
-        else {
-            Toast.makeText(this, "Post deletion failed", Toast.LENGTH_LONG).show()
-        }
+        marker.remove()
+        markersOnMap.find{it == marker}?.remove()
     }
 
     override fun onMarkerClick(marker : Marker): Boolean {
@@ -193,7 +184,7 @@ class MapActivity : AppCompatActivity(),
     override fun onInfoWindowClick(marker: Marker) {
         if (marker.tag != "user") {
             val post = marker.tag as Post
-            //if (post.userID == LocalStorage.getUserId() || checkOpenDistance(marker)) {
+            if (post.userID == LocalStorage.getUserId() || MarkerRender.checkOpenDistance(userLocation, marker)) {
 
                 val inflater = getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
                 val popupView = inflater.inflate(R.layout.layout_popup, null)
@@ -209,24 +200,21 @@ class MapActivity : AppCompatActivity(),
 
                 val popupText = popupView.findViewById<TextView>(R.id.popup_window_text)
                 popupText.text = post.message
-            //}
-        }
-        marker.hideInfoWindow()
-    }
-    // TÄHÄN SIT OMAN VIESTIN MUOKKAUS POISTO ETC
-    override fun onInfoWindowLongClick(marker: Marker) {
-        Log.d("Map Activity", "tultiin onInfoWindowLongClickiin")
-        if (marker.tag != "user") {
-            val post = marker.tag as Post
-            if (post.userID == LocalStorage.getUserId()) {
-                val intent = Intent(this, ViewMessageActivity::class.java)
-                intent.putExtra("post", post)
-                startActivity(intent);
             }
         }
         marker.hideInfoWindow()
     }
 
+    override fun onInfoWindowLongClick(marker: Marker) {
+        if (marker.tag != "user") {
+            val post = marker.tag as Post
+            if (post.userID == LocalStorage.getUserId()) {
+                val popupView: View = layoutInflater.inflate(R.layout.editmessage_popup, null)
+                popupRender.render(popupView, marker, ::removeMarker)
+            }
+        }
+        marker.hideInfoWindow()
+    }
 
 
     // EVENTBUSS / SERVICEJUTTUJA

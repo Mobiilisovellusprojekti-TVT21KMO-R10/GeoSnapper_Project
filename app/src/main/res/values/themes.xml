@@ -15,4 +15,10 @@
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
     </style>
+    <style name="Button.red" parent="ThemeOverlay.AppCompat">
+        <item name="colorAccent">@color/red</item>
+    </style>
+    <style name="Button.green" parent="ThemeOverlay.AppCompat">
+        <item name="colorAccent">@color/dark_green</item>
+    </style>
 </resources>

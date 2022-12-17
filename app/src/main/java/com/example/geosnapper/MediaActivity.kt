@@ -50,4 +50,8 @@ class MediaActivity : AppCompatActivity() {
             }
         }
     }
+    override fun onDestroy() {
+        super.onDestroy()
+        Database().getAllMessages2()
+    }
 }
