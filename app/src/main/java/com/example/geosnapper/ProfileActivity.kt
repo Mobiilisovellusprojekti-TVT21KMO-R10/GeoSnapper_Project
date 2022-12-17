@@ -41,12 +41,14 @@ class ProfileActivity : AppCompatActivity() {
             collection.whereEqualTo("uid", uid)
                 .get()
                 .addOnSuccessListener { documents ->
+                    binding.linearLayoutProfileInner.removeAllViews()
                     for (document in documents) {
                         val gson = Gson()
                         val messageData = gson.toJson(document.data)
 
                         val messageView = TextView(this)
                         messageView.text = messageData
+
 
                         binding.linearLayoutProfileInner.addView(messageView)
 
