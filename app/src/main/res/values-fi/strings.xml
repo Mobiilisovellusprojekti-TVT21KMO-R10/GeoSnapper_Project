@@ -66,4 +66,5 @@
     <string name="please_wait">Ole hyvä ja odota</string>
     <string name="get_closer">Sinun täytyy tulla lähemmäksi avataksesi</string>
     <string name="open_post">Avaa postaus napauttamalla</string>
+    <string name="select_post_view_distance">Aseta etäisyys jonka sisällä viestit näkyvät:</string>
 </resources>

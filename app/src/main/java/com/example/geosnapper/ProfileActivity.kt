@@ -110,7 +110,8 @@ class ProfileActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener 
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
         }
-        val distance = if (LocalStorage.getViewDistance() == 0) 1 else LocalStorage.getViewDistance() / 1000
+
+        val distance = if (LocalStorage.getViewDistance() == 0) 15 else LocalStorage.getViewDistance() / 1000
         binding.slider.value = distance.toFloat()
         binding.slider.addOnSliderTouchListener(object : Slider.OnSliderTouchListener {
             override fun onStartTrackingTouch(slider: Slider) {

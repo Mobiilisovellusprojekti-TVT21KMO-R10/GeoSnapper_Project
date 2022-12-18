@@ -38,7 +38,9 @@ class LoginActivity : AppCompatActivity() {
         binding.btnSubmit.setOnClickListener{
             val email = binding.etEmail.text.toString()
             val password = hasher(binding.etPassword.text.toString())
-            
+
+            LocalStorage.saveLoginData("asd", "asd", "asdasdadd")
+            openApp("asddd")
             if (email.isNotEmpty() && password.isNotEmpty()){
                 firebaseLogIn(email,password)
             }

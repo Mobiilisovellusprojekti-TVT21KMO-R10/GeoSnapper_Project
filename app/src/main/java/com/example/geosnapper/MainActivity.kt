@@ -21,7 +21,6 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         LocalStorage.setup(applicationContext)
-        LocalStorage.setViewDistance(0)
 
         val locale = Locale(LocalStorage.getLanguage())
         Locale.setDefault(locale)
