@@ -4,8 +4,10 @@ package com.example.geosnapper
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.content.Intent
+import android.content.res.Configuration
 import com.example.geosnapper.dataHandling.LocalStorage
 import com.example.geosnapper.databinding.ActivityMainBinding
+import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
@@ -19,9 +21,18 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         LocalStorage.setup(applicationContext)
+        LocalStorage.setViewDistance(0)
+
+        val locale = Locale(LocalStorage.getLanguage())
+        Locale.setDefault(locale)
+        val config = Configuration()
+        config.locale = locale
+        baseContext.resources.updateConfiguration(
+            config,
+            baseContext.resources.displayMetrics
+        )
 
 
-        //tässä muuttujassa on käyttäjän ID.
         val passedValue = intent.getStringExtra("userId")
 
         if (passedValue == null || passedValue == "null") {

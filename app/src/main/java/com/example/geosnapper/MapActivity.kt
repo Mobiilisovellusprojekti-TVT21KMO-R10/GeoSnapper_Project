@@ -4,13 +4,12 @@ import android.annotation.SuppressLint
 import android.app.ProgressDialog
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.Resources
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.view.Gravity
-import android.view.LayoutInflater
+import android.util.Log
 import android.view.View
-import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.example.geosnapper.dataHandling.Database
@@ -32,22 +31,18 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
-import com.google.firebase.auth.FirebaseAuth
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+
 
 
 class MapActivity : AppCompatActivity(),
     OnMapReadyCallback,
     ActivityCompat.OnRequestPermissionsResultCallback,
     GoogleMap.OnMarkerClickListener,
-    GoogleMap.OnInfoWindowClickListener,
-    GoogleMap.OnInfoWindowLongClickListener {
+    GoogleMap.OnInfoWindowClickListener {
 
     private lateinit var map: GoogleMap
     private lateinit var binding: ActivityMapBinding
     private lateinit var service: Intent
-    private lateinit var firebaseAuth: FirebaseAuth
     private var setMapOnUserLocation = true
     private var locationPermission = false
     private var userLocation = LatLng(0.0, 0.0)
@@ -58,12 +53,12 @@ class MapActivity : AppCompatActivity(),
     private val locationPermissions = LocationPermissions(this)
     private lateinit var locationDialog: ProgressDialog
     private val popupRender = EditMessagePopupRender(this)
+    private val MarkerRender = MarkerRender(this)
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        firebaseAuth = FirebaseAuth.getInstance()
         binding = ActivityMapBinding.inflate(layoutInflater)
         setContentView(binding.root)
         service = Intent(this, LocationService::class.java)
@@ -84,28 +79,21 @@ class MapActivity : AppCompatActivity(),
             val intent = Intent(this, ProfileActivity::class.java)
             startActivity(intent)
         }
-        binding.buttonLogout.setOnClickListener {
-            firebaseAuth.signOut()              // LOG OUTILLE OIS EHKÄ LOOGISEMPI JA PAREMPI PAIKKA JOSSAIN ASETUKSISSA, EIHÄN ME HALUTA ETTÄ KÄYTTÄJÄT NOIN HELPOSTI SOVELLUKSEN KÄYTÖN LOPETTAA:)
-            LocalStorage.initialize()
-            finish()
-            val intent = Intent(this, LoginActivity::class.java)
-            startActivity(intent)
-        }
+        getString(R.string.open_post)
     }
 
 
-    // KARTAN PÄIVITYSTÄ
+
     @SuppressLint("PotentialBehaviorOverride")
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
         map.uiSettings.isZoomControlsEnabled = true
         map.setOnMarkerClickListener(this)
         map.setOnInfoWindowClickListener(this)
-        map.setOnInfoWindowLongClickListener(this)
         map.setInfoWindowAdapter(CustomInfoWindowAdapter())
         locationDialog = ProgressDialog(this)
-        locationDialog.setTitle("Getting location")
-        locationDialog.setMessage("Please wait")
+        locationDialog.setTitle(getString(R.string.getting_location))
+        locationDialog.setMessage(getString(R.string.please_wait))
         locationDialog.setCancelable(false)
         locationDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER)
         locationDialog.window?.setBackgroundDrawable(ColorDrawable(Color.GRAY))
@@ -125,14 +113,14 @@ class MapActivity : AppCompatActivity(),
             else {
                 userMarker.position = currentLocation
                 markersOnMap.map {
-                    it.isVisible = MarkerRender.checkViewDistance(userLocation, it.position, it.snippet!!.toInt())     // MUISTA PÄIVITTÄÄ TÄÄ
+                    it.isVisible = MarkerRender.checkViewDistance(userLocation, it.position, it.snippet!!.toInt())
                 }
             }
         }
     }
 
 
-    // MARKKERIJUTTUJA
+
     private fun addMarkers() {
         val markers = posts?.let { PostToMarkerClass().listHandler(it) }
         markers?.forEach { marker ->
@@ -178,48 +166,28 @@ class MapActivity : AppCompatActivity(),
             MarkerRender.renderInfoWindow(userLocation, marker, infoWindow)
             return infoWindow
         }
-        override fun getInfoContents(marker: Marker): View? {   // JOSTAIN SYYSTÄ VAATII TÄN
+        override fun getInfoContents(marker: Marker): View? {
             return null
         }
     }
-    // AJATUS OLISI AVATA VIESTIT EHTOJEN TÄYTTYESSÄ MARKERIN INFORUUTUA KLIKKAAMALLA
+
     override fun onInfoWindowClick(marker: Marker) {
         if (marker.tag != "user") {
             val post = marker.tag as Post
             if (post.userID == LocalStorage.getUserId() || MarkerRender.checkOpenDistance(userLocation, marker)) {
-
-                val inflater = getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
-                val popupView = inflater.inflate(R.layout.layout_popup, null)
-
-                // step 2
-                val wid = LinearLayout.LayoutParams.WRAP_CONTENT
-                val high = LinearLayout.LayoutParams.WRAP_CONTENT
-                val focus = true
-                val popupWindow = PopupWindow(popupView, wid, high, focus)
-
-                // step 3
-                popupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0)
-
-                val popupText = popupView.findViewById<TextView>(R.id.popup_window_text)
-                popupText.text = post.message
-            }
-        }
-        marker.hideInfoWindow()
-    }
-
-    override fun onInfoWindowLongClick(marker: Marker) {
-        if (marker.tag != "user") {
-            val post = marker.tag as Post
-            if (post.userID == LocalStorage.getUserId()) {
                 val popupView: View = layoutInflater.inflate(R.layout.editmessage_popup, null)
-                popupRender.render(popupView, marker, ::removeMarker)
+                var ownPost = false
+                if (post.userID == LocalStorage.getUserId()) {
+                    ownPost = true
+                }
+                popupRender.render(popupView, marker, ownPost, ::removeMarker)
             }
         }
         marker.hideInfoWindow()
     }
 
 
-    // EVENTBUSS / SERVICEJUTTUJA
+
     override fun onStart() {
         super.onStart()
         if (!EventBus.getDefault().isRegistered(this)) {

@@ -4,7 +4,6 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Base64
-import android.util.Log
 import android.widget.Toast
 import com.example.geosnapper.dataHandling.LocalStorage
 import com.example.geosnapper.databinding.ActivityLoginBinding
@@ -21,7 +20,6 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // TÄSSÄ CHEKATAAN ONKO TALLENNETTUJA KIRJAUTUMISTIETOJA JA JOS ON NIIN KIRJAUTUU NIILLÄ
         ifSavedLogInData()
 
         binding = ActivityLoginBinding.inflate(layoutInflater)
@@ -41,13 +39,13 @@ class LoginActivity : AppCompatActivity() {
             val email = binding.etEmail.text.toString()
             val password = hasher(binding.etPassword.text.toString())
 
-            Log.d("Login Activity", email + "" + password)
-
+            LocalStorage.saveLoginData("asd", "asd", "asddd")
+            openApp("asddd")
             if (email.isNotEmpty() && password.isNotEmpty()){
                 firebaseLogIn(email,password)
             }
             else {
-                Toast.makeText(this, "Empty fields are not allowed.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, R.string.empty_fields, Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -61,7 +59,6 @@ class LoginActivity : AppCompatActivity() {
                     user?.let {
                         uid = user.uid
                     }
-                    Log.d("Login Activity", "Login oli muuten succesful")
                     LocalStorage.saveLoginData(email, password, uid)
                     openApp(uid)
                 }
@@ -72,7 +69,6 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun openApp(uid: String) {
-        Log.d("Login Activity", "Tultiin openAppiin")
         val intent = Intent(this, MainActivity::class.java)
         intent.putExtra("userId", uid)
         startActivity(intent)
@@ -81,8 +77,7 @@ class LoginActivity : AppCompatActivity() {
     private fun ifSavedLogInData() {
         val email = LocalStorage.getEmail()
         val password = LocalStorage.getPassword()
-        if (email != "Pekka" && password != "Sauri") {      // HASSUTTELUA, KORJATTAVA JOTKU CLEAN CODE ARVOT
-            //openApp(LocalStorage.getUserId())                            // OLISI MYÖS MAHDOLLISTA TALLENTAA UID JA KIRJATA SEN KANS SUORAAN SISÄÄN. EI TOSIN OO TURVALLISIN RATKAISU
+        if (email != "Pekka" && password != "Sauri") {
             firebaseLogIn(email, password)
         }
     }

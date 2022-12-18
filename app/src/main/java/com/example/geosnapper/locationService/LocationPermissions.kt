@@ -10,7 +10,6 @@ import com.example.geosnapper.MapActivity
 
 class LocationPermissions(private val activity: MapActivity) {
 
-    // LOCATIONSERVICE VAATII TÄMMÖSET HIRVITYKSET
     private val backgroundLocation = activity.registerForActivityResult(ActivityResultContracts.RequestPermission()) {
     }
     private val locationPermissions = activity.registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {

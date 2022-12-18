@@ -21,7 +21,7 @@
         android:textSize="25dp"
         android:textColor="#395144"
         android:padding="10dp"
-        android:text="Leave a GeoSnap"/>
+        android:text="@string/leave_a_geosnap"/>
 
     <EditText
         android:id="@+id/edit_text"
@@ -43,7 +43,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:insetLeft="10dp"
-        android:text="Reset"
+        android:text="@string/reset"
         android:textAllCaps="false" />
 
     <Button
@@ -51,7 +51,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:insetLeft="10dp"
-        android:text="Submit"
+        android:text="@string/submit"
         android:textAllCaps="false" />
 
     </LinearLayout>

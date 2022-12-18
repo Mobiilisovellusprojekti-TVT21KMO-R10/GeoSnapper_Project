@@ -29,7 +29,7 @@
             android:id="@+id/buttonTest1"
             android:layout_width="10dp"
             android:layout_height="match_parent"
-            android:text="Test1"
+            android:text="@string/add_geosnap"
             android:gravity="center_horizontal|center_vertical"
             android:layout_weight="1" />
 
@@ -38,15 +38,9 @@
             android:layout_width="10dp"
             android:layout_height="match_parent"
             android:gravity="center_horizontal|center_vertical"
-            android:text="Test2"
+            android:text="@string/settings"
             android:layout_weight="1" />
-        <Button
-            android:id="@+id/buttonLogout"
-            android:layout_width="10dp"
-            android:layout_height="match_parent"
-            android:gravity="center_horizontal|center_vertical"
-            android:text="Logout"
-            android:layout_weight="1" />
+
         <View
             android:id="@+id/VerticalLine3"
             android:layout_width="30dp"

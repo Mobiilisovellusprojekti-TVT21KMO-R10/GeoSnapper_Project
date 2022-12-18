@@ -1,5 +1,6 @@
 package com.example.geosnapper.marker
 
+import android.content.Context
 import android.graphics.Color
 import android.location.Location
 import android.os.Handler
@@ -10,7 +11,7 @@ import android.view.View
 import android.view.animation.BounceInterpolator
 import android.widget.ImageView
 import android.widget.TextView
-import com.example.geosnapper.Marker.MarkerConstants
+import com.example.geosnapper.Markers.MarkerConstants
 import com.example.geosnapper.R
 import com.example.geosnapper.dataHandling.LocalStorage
 import com.example.geosnapper.post.Post
@@ -19,7 +20,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import java.util.*
 
-object MarkerRender {
+open class MarkerRender(private val context: Context) {
 
    fun calculateDistanceInMeters(userLocation: LatLng, postCoordinates: LatLng): Float {
         val results = FloatArray(1)
@@ -74,13 +75,13 @@ object MarkerRender {
         val description1Ui = view.findViewById<TextView>(R.id.description1)
         val desc1: String
         if (checkOpenDistance(userLocation, marker) || post.userID == LocalStorage.getUserId()) {
-            desc1 = "Tap to open post"
+            desc1 = context.getString(R.string.open_post)
         }
         else {
-            desc1 = "You have to get closer to open"
+            desc1 = context.getString(R.string.get_closer)
         }
         description1Ui.text = desc1
-
+        /*
         val description2Ui = view.findViewById<TextView>(R.id.description2)
         val desc2: String
         if (post.userID == LocalStorage.getUserId()) {
@@ -90,6 +91,7 @@ object MarkerRender {
             desc2 = ""
         }
         description2Ui.text = desc2
+        */
     }
 
     fun jumpAnimation(marker: Marker) {

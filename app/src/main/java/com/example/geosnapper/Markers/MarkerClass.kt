@@ -11,14 +11,3 @@ data class MarkerClass (
         val expires: String,
         val icon: BitmapDescriptor,
     )
-
-
-
-    /*
-    CLUSTEROINTI VARMAAN KANNATTAA OTTAA KÄYTTÖÖN, MUTTA EI EHKÄ NYT ALUN TESTIVAIHEESSA
-    : ClusterItem {
-        override fun getPosition(): LatLng =
-            latLng
-        ...
-    }
-    */

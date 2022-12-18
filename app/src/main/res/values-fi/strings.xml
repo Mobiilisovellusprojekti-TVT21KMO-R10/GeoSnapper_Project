@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">geoSnapper</string>
+    <string name="title_activity_map">MapActivity</string>
+    <string name="test_string">Moikkulis moi</string>
+    <string name="test_name">Timo Testipää</string>
+    <string name="company_name">GeoSnapper Oy</string>
+    <string name="lorem_ipsum">
+        Architecto perferendis sit dolore rerum consectetur mollitia in sed. Exercitationem maxime totam quidem. Quam assumenda doloremque sit tempore cupiditate et. Autem dicta qui et id dolorum architecto est. Ea harum dolores est officiis aut.
+        Facilis dolores quia voluptas dolore ipsa sed. Et necessitatibus architecto deserunt minima voluptatem dolorem. Aut laudantium quam tempora repellat et non molestiae et. Rerum necessitatibus autem ad.
+        Perspiciatis quos facere dolorem quo quas est. Sed sed voluptatem deleniti. Quae ut dolore et illo minus natus rerum harum.
+        Nihil modi molestias incidunt voluptatem. Consequuntur id aperiam error odit aut molestiae. Aut ipsa aut maxime perspiciatis sit molestiae quasi. Consequatur sed est qui quia rem.
+        Nihil et eos et vel. Dolorem autem quisquam impedit iste dolorem natus eos dolores. Provident cum molestiae suscipit sit corrupti omnis. Perferendis placeat ut enim ullam in.
+    </string>
+    <!-- Preference Titles -->
+    <string name="messages_header">Messages</string>
+    <string name="sync_header">Sync</string>
+
+    <!-- Messages LocalStorage -->
+    <string name="signature_title">Your signature</string>
+    <string name="reply_title">Default reply action</string>
+
+    <!-- Sync LocalStorage -->
+    <string name="sync_title">Sync email periodically</string>
+    <string name="attachment_title">Download incoming attachments</string>
+    <string name="attachment_summary_on">Automatically download attachments for incoming emails
+    </string>
+    <string name="attachment_summary_off">Only download attachments when manually requested</string>
+    <string name="delete">Poista</string>
+    <string name="update">Päivitä</string>
+    <string name="close">Sulje</string>
+    <string name="upgrade">Paranna</string>
+    <string name="this_is_the_settings_view">Täällä ei ole mitään nähtävää</string>
+    <string name="email">Sähköposti</string>
+    <string name="signup">Luo tunnus</string>
+    <string name="password">Salasana</string>
+    <string name="confirm_password">Vahvista salasana</string>
+    <string name="reset">Reset</string>
+    <string name="submit">Lähetä</string>
+    <string name="already_registered_log_in_instead">Löytyy jo tunnus? Kirjaudu sisään!</string>
+    <string name="login">Kirjaudu</string>
+    <string name="can_t_login_register_instead">Kirjautuminen ei onnistu? Luo tunnus!</string>
+    <string name="add_geosnap">Lisää GeoSnap</string>
+    <string name="settings">Asetukset</string>
+    <string name="logout">Kirjaudu ulos</string>
+    <string name="leave_a_geosnap">Jätä GeoSnap</string>
+    <string name="show_messages">Näytä viestit</string>
+    <string name="thank_you">Kiitos</string>
+    <string name="select_language">Valitse kieli:</string>
+    <string name="back">Takaisin</string>
+    <string name="empty_fields">Täytä kaikki kentät</string>
+    <string name="passwords_not_same">Salasanat eivat ole samat!</string>
+    <string name="delete_post">POISTA POSTAUS</string>
+    <string name="are_you_sure">Oletko varma, etta haluat poistaa postauken?</string>
+    <string name="delete_success">Postauksen poistaminen onnistui</string>
+    <string name="delete_failed">Postauksen poistaminen epäonnistui</string>
+    <string name="cancel">Peruuta</string>
+    <string name="post_update_success">Postauksen päivitys onnistui</string>
+    <string name="post_update_failed">Postauksen päivitys epäonnistui</string>
+    <string name="upgrade_post">Päivitä postauksesta TIER 1 Nyt vain 1€</string>
+    <string name="upgrade_post_header">PÄIVITÄ POSTAUS</string>
+    <string name="buy">Osta</string>
+    <string name="post_upgrade_success">Postauksen päivitys onnistui</string>
+    <string name="post_upgrade_failed">Postauksen päivitys epäonnistui</string>
+    <string name="getting_location">Haetaan sijaintia</string>
+    <string name="please_wait">Ole hyvä ja odota</string>
+    <string name="get_closer">Sinun täytyy tulla lähemmäksi avataksesi</string>
+    <string name="open_post">Avaa postaus napauttamalla</string>
+</resources>

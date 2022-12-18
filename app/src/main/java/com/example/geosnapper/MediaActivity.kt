@@ -2,7 +2,6 @@ package com.example.geosnapper
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import com.example.geosnapper.dataHandling.Database
 import com.example.geosnapper.dataHandling.LocalStorage
 import com.example.geosnapper.databinding.ActivityMediaBinding
@@ -36,17 +35,11 @@ class MediaActivity : AppCompatActivity() {
         binding.btnSubmit.setOnClickListener{
             val message = binding.editText.text.toString()
 
-            Log.d("Media Activity", "nappi toimii")
 
             if (passedValue != null){
                 val messageObject = MessageData(message, "", Timestamp(Date()), coordinates, 3, LocalStorage.getUserId());
                 db.addMessage(messageObject)
-                Log.d("Media Activity", message)
                 finish()
-            }
-            else
-            {
-                Log.d("Media Activity", "mentiin elseen")
             }
         }
     }

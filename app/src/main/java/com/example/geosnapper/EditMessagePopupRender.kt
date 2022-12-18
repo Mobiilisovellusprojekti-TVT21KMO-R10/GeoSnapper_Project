@@ -1,9 +1,9 @@
 package com.example.geosnapper
 
-import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
+import android.content.res.Resources
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
 import android.view.Gravity
@@ -19,8 +19,8 @@ import com.google.android.gms.maps.model.Marker
 
 class EditMessagePopupRender(private val context: Context) {
 
-    @SuppressLint("ResourceAsColor")
-    fun render(popupView: View, marker: Marker, removeMarker: (input: Marker) -> Unit) {
+
+    fun render(popupView: View, marker: Marker, ownPost: Boolean, removeMarker: (input: Marker) -> Unit) {
         val wid = LinearLayout.LayoutParams.WRAP_CONTENT
         val high = LinearLayout.LayoutParams.WRAP_CONTENT
         val focus = true
@@ -40,28 +40,30 @@ class EditMessagePopupRender(private val context: Context) {
         val popupText = popupView.findViewById<TextView>(R.id.popup_window_text)
         val userAvatar = popupView.findViewById<ImageView>(R.id.userAvatar)
         val userName = popupView.findViewById<TextView>(R.id.userName)
+        val editButtons = popupView.findViewById<LinearLayout>(R.id.linearLayout2)
 
         userAvatar.setImageResource(R.drawable.test_avatar)
         userName.text = "setäSomuli"
         popupText.text = post.message
 
+        if (ownPost) editButtons.visibility = View.VISIBLE
         deleteButton.setOnClickListener {
             val builder = AlertDialog.Builder(context)
-                .setTitle(coloredText("DELETE POST", R.color.red))
-                .setMessage("Are you sure you want to delete the post?")
-                .setPositiveButton(coloredText("Delete", R.color.red),
+                .setTitle(coloredText(R.string.delete_post, R.color.red))
+                .setMessage(context.getString(R.string.are_you_sure))
+                .setPositiveButton(coloredText(R.string.delete, R.color.red),
                     DialogInterface.OnClickListener { _, _ ->
                         if (Database().deleteMessage(post.postId)) {
                             removeMarker(marker)
                             popupWindow.dismiss()
-                            Toast.makeText(context, "Post deteted successfully", Toast.LENGTH_LONG).show()
+                            Toast.makeText(context, R.string.delete_success, Toast.LENGTH_LONG).show()
                         }
                         else {
-                            Toast.makeText(context, "Post deletion failed", Toast.LENGTH_LONG).show()
+                            Toast.makeText(context, R.string.delete_failed, Toast.LENGTH_LONG).show()
                         }
                     }
                 )
-                .setNegativeButton("Cancel",
+                .setNegativeButton(R.string.cancel,
                     DialogInterface.OnClickListener { _, _ ->
                     }
                 )
@@ -77,36 +79,37 @@ class EditMessagePopupRender(private val context: Context) {
             if (post.message != newMessage) {
                 if (Database().updatePostsOneValue(post.postId, "message", newMessage)) {
                     post.message = newMessage
-                    Toast.makeText(context, "Post updated successfully", Toast.LENGTH_LONG).show()
+                    Toast.makeText(context, R.string.post_update_success, Toast.LENGTH_LONG).show()
                     popupWindow.dismiss()
                 } else {
-                    Toast.makeText(context, "Post update failed", Toast.LENGTH_LONG).show()
+                    Toast.makeText(context, R.string.post_update_failed, Toast.LENGTH_LONG).show()
                 }
             }
         }
 
-        if (post.tier == 3) upgradeButton.visibility = View.VISIBLE
+        if (post.tier == 3 && ownPost) upgradeButton.visibility = View.VISIBLE
         upgradeButton.setOnClickListener {
-            val message = "Upgrade your post to TIER 1 only at 1€"
+            val message = context.getString(R.string.upgrade_post)
             val builder = AlertDialog.Builder(context)
-                .setTitle(coloredText("UPGRADE POST",R.color.green))
+                .setTitle(coloredText(R.string.upgrade_post_header,R.color.green))
                 .setMessage(SpannableString(message).apply {
                     setSpan(ForegroundColorSpan(ContextCompat.getColor(context, R.color.gold)), 21, 27, 0)
                     setSpan(ForegroundColorSpan(ContextCompat.getColor(context, R.color.red)), 28, message.length, 0)
                 })
-                .setPositiveButton(coloredText("Buy",R.color.green),
+                .setPositiveButton(coloredText(R.string.buy,R.color.green),
                     DialogInterface.OnClickListener { _, _ ->
                         if (Database().updatePostsOneValue(post.postId, "tier", 1)) {
                             marker.setIcon(PostToMarkerClass().iconSelector(1, post.type))
                             post.tier = 1
-                            Toast.makeText(context, "Post upgraded successfully", Toast.LENGTH_LONG).show()
+                            upgradeButton.visibility = View.INVISIBLE
+                            Toast.makeText(context,R.string.post_upgrade_success, Toast.LENGTH_LONG).show()
                         }
                         else {
-                            Toast.makeText(context, "Post upgrade failed", Toast.LENGTH_LONG).show()
+                            Toast.makeText(context,R.string.post_upgrade_failed, Toast.LENGTH_LONG).show()
                         }
                     }
                 )
-                .setNegativeButton("Cancel",
+                .setNegativeButton(R.string.cancel,
                     DialogInterface.OnClickListener { _, _ ->
                     }
                 )
@@ -114,8 +117,8 @@ class EditMessagePopupRender(private val context: Context) {
         }
     }
 
-    private fun coloredText(text: String, colorResource: Int): SpannableString {
-        return SpannableString(text).apply {
+    private fun coloredText(text: Int, colorResource: Int): SpannableString {
+        return SpannableString(context.getString(text)).apply {
             setSpan(ForegroundColorSpan(ContextCompat.getColor(context, colorResource)), 0, this.length, 0)
         }
     }

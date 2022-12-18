@@ -4,15 +4,17 @@ import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import android.webkit.WebChromeClient.FileChooserParams.MODE_OPEN
+import org.intellij.lang.annotations.Language
 
 object LocalStorage {
-    // TALLENNETTAVA TIEDOSTO
+
     private const val USER_DATA = "USER_DATA"
-    // TALLENNETTAVAT TIEDOT
+
     private const val USER_EMAIL = "USER_EMAIL"
     private const val USER_PASSWORD = "PASSWORD"
     private const val USER_ID = "USER_ID"
     private const val VIEW_DISTANCE = "VIEW_DISTANCE"
+    private const val LANGUAGE = "LANGUAGE"
 
     private var userPrefs : SharedPreferences? = null
 
@@ -54,6 +56,14 @@ object LocalStorage {
             }
         }
 
+    private var SharedPreferences.language
+        get() = getString(LANGUAGE, "en")
+        set(value) {
+            editMe {
+                it.putString(LANGUAGE, value)
+            }
+        }
+
     private var SharedPreferences.initialize
         get() = true
         set(value) {
@@ -79,6 +89,10 @@ object LocalStorage {
         userPrefs?.viewDistance = distance
     }
 
+    fun setLanguage(language: String) {
+        userPrefs?.language = language
+    }
+
     fun initialize() {
         userPrefs?.initialize = true
     }
@@ -97,5 +111,9 @@ object LocalStorage {
 
     fun getViewDistance(): Int {
         return userPrefs!!.viewDistance
+    }
+
+    fun getLanguage(): String {
+        return userPrefs?.language.toString()
     }
 }

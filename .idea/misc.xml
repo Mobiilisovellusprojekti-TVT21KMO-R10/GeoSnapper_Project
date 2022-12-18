@@ -1,5 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/Users/Tero/mobiilihomoiluprojekti/git_testailua/app/src/main/res/layout/activity_about.xml" value="0.32563405797101447" />
+        <entry key="..\:/Users/Tero/mobiilihomoiluprojekti/git_testailua/app/src/main/res/layout/activity_login.xml" value="0.32563405797101447" />
+        <entry key="..\:/Users/Tero/mobiilihomoiluprojekti/git_testailua/app/src/main/res/layout/activity_main.xml" value="0.32563405797101447" />
+        <entry key="..\:/Users/Tero/mobiilihomoiluprojekti/git_testailua/app/src/main/res/layout/activity_map.xml" value="0.32563405797101447" />
+        <entry key="..\:/Users/Tero/mobiilihomoiluprojekti/git_testailua/app/src/main/res/layout/activity_media.xml" value="0.32563405797101447" />
+        <entry key="..\:/Users/Tero/mobiilihomoiluprojekti/git_testailua/app/src/main/res/layout/activity_profile.xml" value="0.1" />
+        <entry key="..\:/Users/Tero/mobiilihomoiluprojekti/git_testailua/app/src/main/res/layout/activity_settings.xml" value="0.32563405797101447" />
+        <entry key="..\:/Users/Tero/mobiilihomoiluprojekti/git_testailua/app/src/main/res/layout/editmessage_popup.xml" value="0.4" />
+        <entry key="..\:/Users/Tero/mobiilihomoiluprojekti/git_testailua/app/src/main/res/layout/infowindow.xml" value="0.22010869565217392" />
+      </map>
+    </option>
+  </component>
   <component name="ExternalStorageConfigurationManager" enabled="true" />
   <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="11" project-jdk-type="JavaSDK" />
 </project>

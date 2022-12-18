@@ -45,21 +45,19 @@ class SignupActivity : AppCompatActivity() {
 
                     firebaseAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener {
                         if (it.isSuccessful){
-                            Log.d("Signup Activity", "Oli muuten succesful")
                             val intent = Intent(this, LoginActivity::class.java)
                             startActivity(intent);
                         }
                         else{
                             Toast.makeText(this, it.exception.toString(), Toast.LENGTH_LONG).show()
-                            Log.d("Signup Error", it.exception.toString())  // Toast ei jostain syystä tulosta koko virheilmoa niin lisäsin tulosteen lokiin
                         }
                     }
                 }
                 else {
-                    Toast.makeText(this, "Passwords are not the same!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, R.string.passwords_not_same, Toast.LENGTH_SHORT).show()
                 }
             } else{
-                Toast.makeText(this, "Empty fields are not allowed.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, R.string.empty_fields, Toast.LENGTH_SHORT).show()
             }
         }
     }

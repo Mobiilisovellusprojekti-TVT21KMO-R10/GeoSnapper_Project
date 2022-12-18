@@ -31,7 +31,7 @@ class Database {
                 Log.w(ContentValues.TAG, "Error adding document", e)
             }
     }
-
+    // kun ei osaa niin jälki on tän näköistä :DDD pääasia kuitenkin kai et toimii
     fun getAllMessages2(){
         val messages = ArrayList<Post>()
         val collection = db.collection(MESSAGE_DATA)
@@ -58,30 +58,6 @@ class Database {
             }
     }
 
-    // kun ei osaa niin jälki on tän näköistä :DDD pääasia kuitenkin kai et toimii
-    suspend fun getAllMessages(): List<Post> {
-        val messages = ArrayList<Post>()
-        db.collection(MESSAGE_DATA)
-            .get().await().forEach {
-                val values: MutableList<String> = mutableListOf()
-                it.data.values.forEach {
-                    values.add(it.toString())
-                }
-                val post: Post = Post(
-                    gson.toJson(it.id),
-                    values[2],
-                    editLocationData(values[4]),
-                    "message",
-                    values[5],
-                    values[3],
-                    values[1].toInt(),
-                    values[0],
-                )
-                messages.add(post)
-            }
-        return messages
-    }
-
     private fun editLocationData(data: String): LatLng {
         val latitudeString = data
             .replaceBefore('=', "")
@@ -105,6 +81,7 @@ class Database {
             false
         }
     }
+
     fun updatePostsOneValue(postId: String, key:String, value: Any): Boolean {
         val document = db.collection(MESSAGE_DATA).document(postId.trim('"'))
         return try {

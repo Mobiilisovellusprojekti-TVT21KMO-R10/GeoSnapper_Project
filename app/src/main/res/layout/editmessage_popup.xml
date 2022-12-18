@@ -108,6 +108,7 @@
                     android:orientation="horizontal"
                     android:paddingTop="4dp"
                     android:paddingBottom="4dp"
+                    android:visibility="gone"
                     app:layout_constraintBottom_toTopOf="@+id/btn_close"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -120,7 +121,7 @@
                         android:layout_weight="0.5"
                         android:layout_height="wrap_content"
                         android:background="#851635"
-                        android:text="Delete"
+                        android:text="@string/delete"
                         android:textAllCaps="false"
                         android:textColor="#FFFFFF"
                         android:textSize="20sp"
@@ -136,31 +137,33 @@
                         android:layout_weight="0.5"
                         android:layout_height="wrap_content"
                         app:backgroundTint="@color/purple_700"
-                        android:text="Update"
+                        android:text="@string/update"
                         android:textAllCaps="false"
                         android:textSize="20sp"
                         android:textColor="#FFFFFF"/>
                 </LinearLayout>
+
                 <Button
                     android:id="@+id/btn_close"
                     style="?android:attr/borderlessButtonStyle"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="#851635"
-                    android:text="Close"
+                    android:text="@string/close"
                     android:textAllCaps="false"
                     android:textColor="#FFFFFF"
                     android:textSize="20sp"
                     android:theme="@style/Button.green"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="1.0"
                     app:layout_constraintStart_toStartOf="parent" />
 
                 <Button
                     android:id="@+id/btn_upgrade"
                     android:layout_width="75dp"
                     android:layout_height="30dp"
-                    android:text="Upgrade"
+                    android:text="@string/upgrade"
                     android:textSize="8sp"
                     android:visibility="invisible"
                     app:layout_constraintEnd_toEndOf="parent"

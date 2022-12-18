@@ -16,7 +16,6 @@ class PostToMarkerClass {
     )
 
     private fun setExpires(tier: Int): String {
-        // TÄHÄN FUNKTIOON VOIS IMPLEMENTOIDA MYÖS SEN ELINAJAN KASVATTAMISEN PEUKUTUSTEN PERUSTEELLA, JOS ME OTETAAN NE PEUKALOINNIT OHJELMAAN MUKAAN
         /*
         val expires = when (tier) {
             //1 -> created.toDateTaiJotainSinnepäin + MarkerConstants.TIER1_LIFETIME
@@ -28,7 +27,6 @@ class PostToMarkerClass {
         return "the post lasts forever"
     }
 
-    // TÄTÄ PITÄÄ VIELÄ VIILATA KUNHAN JAKSAA. NYT VAAN TÄMMÖNEN HAHMOTELMA
     fun iconSelector(tier: Int, type: String): BitmapDescriptor {
         val icon =  when (tier) {
             1 -> BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)
